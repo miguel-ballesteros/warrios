@@ -17,17 +17,14 @@ export const CreateWarriorModal: React.FC<Props> = ({ onClose, onCreate }) => {
   const [breed, setBreed] = useState<Breed | null>(null)
   const [type, setType] = useState<TypeWarrior | null>(null)
   const [selectedPowers, setSelectedPowers] = useState<Power[]>([])
-
   const [breeds, setBreeds] = useState<Breed[]>([])
   const [types, setTypes] = useState<TypeWarrior[]>([])
   const [powers, setPowers] = useState<Power[]>([])
-
   useEffect(() => {
     setBreeds(Breed.getAll())
     setTypes(TypeWarrior.getAll())
     setPowers(Power.getAll())
   }, [])
-
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -38,24 +35,20 @@ export const CreateWarriorModal: React.FC<Props> = ({ onClose, onCreate }) => {
       reader.readAsDataURL(file)
     }
   }
-
   const handleAddPower = (id: number) => {
     const foundPower = powers.find((p) => p.id === id)
     if (foundPower && !selectedPowers.find((p) => p.id === foundPower.id)) {
       setSelectedPowers([...selectedPowers, foundPower])
     }
   }
-
   const handleRemovePower = (id: number) => {
     setSelectedPowers(selectedPowers.filter((p) => p.id !== id))
   }
-
   const handleSubmit = () => {
     if (!name || !breed || !type || selectedPowers.length === 0) {
       alert("Completa todos los campos")
       return
     }
-
     const newWarrior = Warrior.create(
       name,
       image || "",
@@ -65,7 +58,6 @@ export const CreateWarriorModal: React.FC<Props> = ({ onClose, onCreate }) => {
       type,
       selectedPowers
     )
-
     onCreate(newWarrior)
     onClose()
   }
@@ -74,7 +66,6 @@ export const CreateWarriorModal: React.FC<Props> = ({ onClose, onCreate }) => {
     <div style={modalOverlay}>
       <div style={modalContainer}>
         <h2 style={{ marginBottom: "20px", color: "#333" }}>Crear Guerrero</h2>
-
         <input
           type="text"
           placeholder="Nombre"
@@ -96,9 +87,7 @@ export const CreateWarriorModal: React.FC<Props> = ({ onClose, onCreate }) => {
           onChange={(e) => setEnergy(Number(e.target.value))}
           style={inputStyle}
         />
-
         <input type="file" accept="image/*" onChange={handleImageChange} style={inputStyle} />
-
         {image && (
           <img
             src={image}
@@ -106,7 +95,6 @@ export const CreateWarriorModal: React.FC<Props> = ({ onClose, onCreate }) => {
             style={{ width: "100%", height: "auto", marginBottom: "12px", borderRadius: "8px" }}
           />
         )}
-
         <select
           onChange={(e) => setBreed(breeds.find((b) => b.id === Number(e.target.value)) || null)}
           style={inputStyle}
@@ -116,7 +104,6 @@ export const CreateWarriorModal: React.FC<Props> = ({ onClose, onCreate }) => {
             <option key={b.id} value={b.id}>{b.name}</option>
           ))}
         </select>
-
         <select
           onChange={(e) => setType(types.find((t) => t.id === Number(e.target.value)) || null)}
           style={inputStyle}
@@ -126,7 +113,6 @@ export const CreateWarriorModal: React.FC<Props> = ({ onClose, onCreate }) => {
             <option key={t.id} value={t.id}>{t.name}</option>
           ))}
         </select>
-
         <select
           onChange={(e) => handleAddPower(Number(e.target.value))}
           style={inputStyle}
@@ -163,7 +149,6 @@ export const CreateWarriorModal: React.FC<Props> = ({ onClose, onCreate }) => {
             </div>
           ))}
         </div>
-
         <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
           <button onClick={onClose} style={buttonSecondary}>Cancelar</button>
           <button onClick={handleSubmit} style={buttonPrimary}>Crear</button>

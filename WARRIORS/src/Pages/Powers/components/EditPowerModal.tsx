@@ -6,22 +6,18 @@ interface EditPowerModalProps {
   onSave: (updated: Power) => void
   onCancel: () => void
 }
-
 export default function EditPowerModal({ power, onSave, onCancel }: EditPowerModalProps) {
   const [name, setName] = useState(power.name)
   const [damage, setDamage] = useState<number>(power.damage)
   const [effect, setEffect] = useState(power.effect)
-
   const handleSave = () => {
     const updatedPower = new Power(power.id, name, damage, effect)
     onSave(updatedPower)
   }
-
   return (
     <div style={styles.overlay}>
       <div style={styles.modal}>
         <h2 style={{ marginTop: 0, textAlign: "center" }}>✏️ Editar Poder</h2>
-
         <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "16px" }}>
           <input
             type="text"
@@ -45,7 +41,6 @@ export default function EditPowerModal({ power, onSave, onCancel }: EditPowerMod
             style={styles.input}
           />
         </div>
-
         <div style={styles.actions}>
           <button onClick={onCancel} style={styles.cancelButton}>
             Cancelar
@@ -58,7 +53,6 @@ export default function EditPowerModal({ power, onSave, onCancel }: EditPowerMod
     </div>
   )
 }
-
 const styles: { [key: string]: React.CSSProperties } = {
   overlay: {
     position: "fixed",

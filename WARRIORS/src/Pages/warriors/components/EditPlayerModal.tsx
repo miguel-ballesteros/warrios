@@ -7,11 +7,9 @@ interface Props {
   onClose: () => void
   onSave: (updatedPlayer: Player) => void
 }
-
 export function EditPlayerModal({ player, onClose, onSave }: Props) {
   const [name, setName] = useState(player.name)
   const [nickname, setNickname] = useState(player.nickname)
-
   const handleSave = () => {
     const updatedPlayer = new Player(
       player.id,
@@ -24,7 +22,6 @@ export function EditPlayerModal({ player, onClose, onSave }: Props) {
     onSave(updatedPlayer)
     onClose()
   }
-
   return (
     <div style={styles.overlay}>
       <div style={styles.modal}>
@@ -38,8 +35,8 @@ export function EditPlayerModal({ player, onClose, onSave }: Props) {
           <input value={nickname} onChange={(e) => setNickname(e.target.value)} />
         </div>
         <div style={styles.actions}>
-          <button onClick={handleSave} style={styles.saveBtn}>💾 Guardar</button>
-          <button onClick={onClose} style={styles.cancelBtn}>❌ Cancelar</button>
+          <button onClick={handleSave} style={styles.saveBtn}> Guardar</button>
+          <button onClick={onClose} style={styles.cancelBtn}> Cancelar</button>
         </div>
       </div>
     </div>

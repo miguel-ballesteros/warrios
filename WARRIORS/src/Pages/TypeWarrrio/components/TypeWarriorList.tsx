@@ -10,25 +10,21 @@ export default function TypeWarriorList() {
   const [selectedType, setSelectedType] = useState<TypeWarrior | null>(null)
   const [editingType, setEditingType] = useState<TypeWarrior | null>(null)
   const [creating, setCreating] = useState(false)
-
   const handleDelete = (id: number) => {
     TypeWarrior.deleteById(id)
     setTypes(TypeWarrior.getAll())
     setSelectedType(null)
   }
-
   const handleSaveEdit = (updated: TypeWarrior) => {
     TypeWarrior.update(updated)
     setTypes(TypeWarrior.getAll())
     setEditingType(null)
   }
-
   const handleCreate = (newType: TypeWarrior) => {
     TypeWarrior.create(newType)
     setTypes(TypeWarrior.getAll())
     setCreating(false)
   }
-
   return (
     <div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
@@ -50,7 +46,6 @@ export default function TypeWarriorList() {
         >
           <span style={{ fontSize: "32px", color: "#9333ea" }}>＋</span>
         </div>
-
         {types.map((type) => (
           <div
             key={type.id}
@@ -104,7 +99,6 @@ export default function TypeWarriorList() {
           </div>
         ))}
       </div>
-
       {selectedType && (
         <ConfirmDeleteModal
           warriorName={selectedType.name}
@@ -112,7 +106,6 @@ export default function TypeWarriorList() {
           onCancel={() => setSelectedType(null)}
         />
       )}
-
       {editingType && (
         <EditTypeModal
           typeWarrior={editingType}
@@ -120,7 +113,6 @@ export default function TypeWarriorList() {
           onCancel={() => setEditingType(null)}
         />
       )}
-
       {creating && (
         <CreateTypeModal
           onCreate={handleCreate}

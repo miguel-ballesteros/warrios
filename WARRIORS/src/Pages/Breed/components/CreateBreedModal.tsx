@@ -1,16 +1,16 @@
-import React, { useState } from "react";
-import { Breed } from "../../../models/Breed";
+import React, { useState } from "react"
+import { Breed } from "../../../models/Breed"
 
 interface Props {
-  onCreate: (newBreed: Breed) => void;
-  onCancel: () => void;
+  onCreate: (newBreed: Breed) => void
+  onCancel: () => void
 }
 
 export default function CreateBreedModal({ onCreate, onCancel }: Props) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [resistance, setResistance] = useState("");
-  const randomId = Date.now() + Math.floor(Math.random() * 1000);
+  const [name, setName] = useState("")
+  const [description, setDescription] = useState("")
+  const [resistance, setResistance] = useState("")
+  const randomId = Date.now() + Math.floor(Math.random() * 1000)
   return (
     <div style={{
       position: "fixed",
@@ -84,5 +84,5 @@ export default function CreateBreedModal({ onCreate, onCancel }: Props) {
         </div>
       </div>
     </div>
-  );
+  )
 }

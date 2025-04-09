@@ -1,17 +1,15 @@
-import React, { useState } from "react";
-import { Breed } from "../../../models/Breed";
+import React, { useState } from "react"
+import { Breed } from "../../../models/Breed"
 
 interface Props {
-  breed: Breed;
-  onSave: (updated: Breed) => void;
-  onCancel: () => void;
+  breed: Breed
+  onSave: (updated: Breed) => void
+  onCancel: () => void
 }
-
 export default function EditBreedModal({ breed, onSave, onCancel }: Props) {
-  const [name, setName] = useState(breed.name);
-  const [description, setDescription] = useState(breed.description);
-  const [resistance, setResistance] = useState(breed.breedResistance);
-
+  const [name, setName] = useState(breed.name)
+  const [description, setDescription] = useState(breed.description)
+  const [resistance, setResistance] = useState(breed.breedResistance)
   return (
     <div
       style={{
@@ -47,7 +45,6 @@ export default function EditBreedModal({ breed, onSave, onCancel }: Props) {
         >
           Editar Raza: {breed.name}
         </h2>
-
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -61,7 +58,6 @@ export default function EditBreedModal({ breed, onSave, onCancel }: Props) {
             fontSize: "1rem",
           }}
         />
-
         <input
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -75,7 +71,6 @@ export default function EditBreedModal({ breed, onSave, onCancel }: Props) {
             fontSize: "1rem",
           }}
         />
-
         <input
           value={resistance}
           onChange={(e) => setResistance(e.target.value)}
@@ -89,7 +84,6 @@ export default function EditBreedModal({ breed, onSave, onCancel }: Props) {
             fontSize: "1rem",
           }}
         />
-
         <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem" }}>
           <button
             onClick={onCancel}

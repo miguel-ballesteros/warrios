@@ -3,32 +3,26 @@ import { Power } from "../../../models/Power"
 import { ConfirmDeleteModal } from "../../../components/ConfirmDeleteModal"
 import EditPowerModal from "./EditPowerModal"
 import CreatePowerModal from "./CreatePowerModal"
-
-
 export default function PowerList() {
   const [powers, setPowers] = useState<Power[]>(Power.getAll())
   const [selectedPower, setSelectedPower] = useState<Power | null>(null)
   const [editingPower, setEditingPower] = useState<Power | null>(null)
   const [creating, setCreating] = useState(false)
-
   const handleDelete = (id: number) => {
     Power.deleteById(id)
     setPowers(Power.getAll())
     setSelectedPower(null)
   }
-
   const handleSaveEdit = (updated: Power) => {
     Power.update(updated)
     setPowers(Power.getAll())
     setEditingPower(null)
   }
-
   const handleCreate = (newPower: Power) => {
     Power.create(newPower)
     setPowers(Power.getAll())
     setCreating(false)
   }
-
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
       <div
@@ -49,7 +43,6 @@ export default function PowerList() {
       >
         <span style={{ fontSize: "32px", color: "#9333ea" }}>＋</span>
       </div>
-
       {powers.map((power) => (
         <div
           key={power.id}
@@ -102,7 +95,6 @@ export default function PowerList() {
           </div>
         </div>
       ))}
-
       {selectedPower && (
         <ConfirmDeleteModal
           warriorName={selectedPower.name}
@@ -110,7 +102,6 @@ export default function PowerList() {
           onCancel={() => setSelectedPower(null)}
         />
       )}
-
       {editingPower && (
         <EditPowerModal
           power={editingPower}
@@ -118,7 +109,6 @@ export default function PowerList() {
           onCancel={() => setEditingPower(null)}
         />
       )}
-
       {creating && (
         <CreatePowerModal
           onCreate={handleCreate}

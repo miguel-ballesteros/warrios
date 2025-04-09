@@ -8,7 +8,7 @@ interface InfoTypeWarrioProps {
 export default function InfoTypeWarrio({ onClose }: InfoTypeWarrioProps) {
   return (
     <LeftHalfModal onClose={onClose}>
-      <h2 style={{ marginTop: 0 }}>⚔️ Tipos de Guerreros</h2>
+      <h2 style={{ marginTop: 0 }}>Tipos de Guerreros</h2>
       <TypeWarriorList />
       <button
         onClick={onClose}

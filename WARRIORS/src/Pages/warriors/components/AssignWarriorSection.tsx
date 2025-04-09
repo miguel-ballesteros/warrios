@@ -19,7 +19,7 @@ export const AssignWarriorSection: React.FC<Props> = ({
   onAssign,
 }) => {
   const [showCreateModal, setShowCreateModal] = useState(false)
-  const [availableWarriors, setAvailableWarriors] = useState<Warrior[]>([]);
+  const [availableWarriors, setAvailableWarriors] = useState<Warrior[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [showBreedModal, setShowBreedModal] = useState(false)
   const [editingWarrior, setEditingWarrior] = useState<Warrior | null>(null)
@@ -27,40 +27,34 @@ export const AssignWarriorSection: React.FC<Props> = ({
   const [showTypeWarrioModal, setShowTypeWarrioModal] = useState(false)
   const [openMenuId, setOpenMenuId] = useState(false)
   const [showModalPower, setShowModalPower] = useState(false)
-  console.log('availableWarriors:', availableWarriors);
   useEffect(() => {
     const fetchWarriors = async () => {
-      const warriors = await generateWarriors();
-      setAvailableWarriors(warriors);
-    };
-    fetchWarriors();
-  }, []);
+      const warriors = await generateWarriors()
+      setAvailableWarriors(warriors)
+    }
+    fetchWarriors()
+  }, [])
   const handleCreate = (newWarrior: Warrior) => {
     setAvailableWarriors(prev => [...prev, newWarrior])
     onAssign(newWarrior)
     setShowCreateModal(false)
   }
-
   const handleUpdate = (updated: Warrior) => {
     setAvailableWarriors(prev =>
       prev.map(w => (w.id === updated.id ? updated : w))
     )
     setEditingWarrior(null)
   }
-
   const handleDelete = (warriorId: number) => {
     setAvailableWarriors(prev => Warrior.deleteById(prev, warriorId))
     setDeletingWarrior(null)
   }
-
   const filteredWarriors = availableWarriors.filter(warrior =>
     warrior.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
-console.log(filteredWarriors)
   return (
     <div>
       <h2>Asignar nuevo guerrero</h2>
-
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
         <input
           type="text"
@@ -93,7 +87,6 @@ console.log(filteredWarriors)
         >
           ⚙️
         </button>
-
         {openMenuId && (
           <div
             style={{
@@ -137,7 +130,6 @@ console.log(filteredWarriors)
           </div>
         )}
       </div>
-
       <div
         style={{
           display: "grid",
@@ -165,7 +157,6 @@ console.log(filteredWarriors)
         >
           ➕
         </div>
-
         {filteredWarriors.map((warrior) => {
           const isAssigned = player.warriors.some((w) => w.id === warrior.id)
           return (
@@ -203,7 +194,6 @@ console.log(filteredWarriors)
                   }}
                 />
               )}
-
               <div style={{ fontWeight: "bold", fontSize: "16px", marginBottom: "8px" }}>
                 {warrior.name}
               </div>
@@ -267,14 +257,12 @@ console.log(filteredWarriors)
           )
         })}
       </div>
-
       {showCreateModal && (
         <CreateWarriorModal
           onClose={() => setShowCreateModal(false)}
           onCreate={handleCreate}
         />
       )}
-
       {editingWarrior && (
         <EditWarriorModal
           warrior={editingWarrior}
@@ -282,7 +270,6 @@ console.log(filteredWarriors)
           onUpdate={handleUpdate}
         />
       )}
-
       {deletingWarrior && (
         <ConfirmDeleteModal
           warriorName={deletingWarrior.name}

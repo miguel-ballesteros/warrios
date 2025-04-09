@@ -5,19 +5,16 @@ interface CreatePowerModalProps {
   onCreate: (newPower: Power) => void
   onCancel: () => void
 }
-
 export default function CreatePowerModal({ onCreate, onCancel }: CreatePowerModalProps) {
   const [name, setName] = useState("")
   const [damage, setDamage] = useState<number>(0)
   const [effect, setEffect] = useState("")
-
   const handleCreate = () => {
     if (!name || damage <= 0 || !effect) return
     const randomId = Date.now() + Math.floor(Math.random() * 1000)
     const newPower = new Power(randomId, name, damage, effect)
     onCreate(newPower)
   }
-
   return (
     <div style={styles.overlay}>
       <div style={styles.modal}>
@@ -46,7 +43,6 @@ export default function CreatePowerModal({ onCreate, onCancel }: CreatePowerModa
             style={styles.input}
           />
         </div>
-
         <div style={styles.actions}>
           <button onClick={onCancel} style={styles.cancelButton}>
             Cancelar
@@ -59,7 +55,6 @@ export default function CreatePowerModal({ onCreate, onCancel }: CreatePowerModa
     </div>
   )
 }
-
 const styles: { [key: string]: React.CSSProperties } = {
   overlay: {
     position: "fixed",

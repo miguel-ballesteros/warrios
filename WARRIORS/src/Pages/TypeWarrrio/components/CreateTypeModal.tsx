@@ -5,18 +5,15 @@ interface CreateTypeModalProps {
   onCreate: (newType: TypeWarrior) => void
   onCancel: () => void
 }
-
 export default function CreateTypeModal({ onCreate, onCancel }: CreateTypeModalProps) {
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [basePower, setBasePower] = useState(0)
-
   const handleCreate = () => {
     const randomId = Date.now() + Math.floor(Math.random() * 1000)
     const newType = new TypeWarrior(randomId, name, description, basePower)
     onCreate(newType)
   }
-
   return (
     <div style={modalStyles.overlay}>
       <div style={modalStyles.container}>

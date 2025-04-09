@@ -10,7 +10,6 @@ export default function WarriosPage() {
   const { id } = useParams()
   const [player, setPlayer] = useState<Player | null>(null)
   const [showEditModal, setShowEditModal] = useState(false)
-
   useEffect(() => {
     if (!id) return
 
@@ -31,24 +30,20 @@ export default function WarriosPage() {
       console.warn("Jugador no encontrado en localStorage.")
     }
   }, [id])
-
   const updateLocalStoragePlayer = (updated: Player) => {
     const playersStorage = localStorage.getItem("players")
     if (!playersStorage) return
-
     const parsedPlayersRaw = JSON.parse(playersStorage)
     const parsedPlayers: Player[] = parsedPlayersRaw.map(
       (p: any) =>
         new Player(p.id, p.name, p.nickname, p.life, p.record, p.warriors)
     )
-
     const newPlayersList = parsedPlayers.map((p) =>
       p.id === updated.id ? updated : p
     )
 
     localStorage.setItem("players", JSON.stringify(newPlayersList))
   }
-
   const handleSavePlayer = (updated: Player) => {
     if (!player) return
 
@@ -57,7 +52,6 @@ export default function WarriosPage() {
     updateLocalStoragePlayer(player)
     setShowEditModal(false)
   }
-
   const removeWarrior = (warriorId: number) => {
     if (!player) return
 
@@ -71,7 +65,6 @@ export default function WarriosPage() {
       player.record,
       [...player.warriors]
     )
-
     setPlayer(updatedPlayer)
     updateLocalStoragePlayer(updatedPlayer)
   }
@@ -81,10 +74,8 @@ export default function WarriosPage() {
     if (confirm(`¿Seguro que deseas eliminar a ${player.name}?`)) {
       const playersStorage = localStorage.getItem("players")
       if (!playersStorage) return
-
       const parsedPlayers: Player[] = JSON.parse(playersStorage)
       const newList = parsedPlayers.filter((p) => p.id !== player.id)
-
       localStorage.setItem("players", JSON.stringify(newList))
       navigate("/")
     }
@@ -92,20 +83,16 @@ export default function WarriosPage() {
 
   const assignWarrior = (warrior: Warrior) => {
     if (!player) return
-
     if (player.warriors.length >= 10) {
       alert("Solo puedes asignar un máximo de 10 guerreros.")
       return
     }
-
     const alreadyAssigned = player.warriors.find((w) => w.id === warrior.id)
     if (alreadyAssigned) {
       alert("Este guerrero ya ha sido asignado.")
       return
     }
-
     player.AssignWarriosToPlayer(warrior)
-
     const updatedPlayer = new Player(
       player.id,
       player.name,
@@ -114,14 +101,11 @@ export default function WarriosPage() {
       player.record,
       [...player.warriors]
     )
-
     setPlayer(updatedPlayer)
     updateLocalStoragePlayer(updatedPlayer)
   }
-
   if (!player)
     return <p>No se encontró el jugador. Intenta de nuevo desde la lista.</p>
-
   return (
     <div style={{ padding: "20px" }}>
       <div
@@ -152,7 +136,6 @@ export default function WarriosPage() {
             zIndex: 0,
           }}
         ></div>
-
         <div style={{ zIndex: 1 }}>
           <p style={{ margin: 0, fontSize: "16px", fontWeight: "bold" }}>
             🎮 {player.name}{" "}
@@ -161,7 +144,6 @@ export default function WarriosPage() {
             </span>
           </p>
           <p style={{ margin: "8px 0 0", fontSize: "13px" }}>📊 Record: {player.record}</p>
-
           <div style={{ display: "flex", alignItems: "center", marginTop: "10px" }}>
             <span style={{ marginRight: "10px", fontSize: "13px" }}>❤️ Vida:</span>
             <div
@@ -194,7 +176,6 @@ export default function WarriosPage() {
             </span>
           </div>
         </div>
-
         <div style={{ display: "flex", gap: "12px", zIndex: 1 }}>
           <button
             onClick={() => setShowEditModal(true)}
@@ -213,9 +194,8 @@ export default function WarriosPage() {
             onMouseEnter={(e) => (e.currentTarget.style.background = "#1c89e5")}
             onMouseLeave={(e) => (e.currentTarget.style.background = "#44aaff")}
           >
-            ✏️ Editar
+             Editar
           </button>
-
           <button
             onClick={deletePlayer}
             style={{
@@ -232,13 +212,11 @@ export default function WarriosPage() {
             onMouseEnter={(e) => (e.currentTarget.style.background = "#cc0000")}
             onMouseLeave={(e) => (e.currentTarget.style.background = "#ff4444")}
           >
-            🗑️ Eliminar
+             Eliminar
           </button>
         </div>
       </div>
-
       <hr style={{ margin: "30px 0" }} />
-
       <h2>Guerreros asignados ({player.warriors.length}/10)</h2>
       {player.warriors.length === 0 ? (
         <p>No hay guerreros asignados.</p>
@@ -275,14 +253,11 @@ export default function WarriosPage() {
           ))}
         </ul>
       )}
-
       <hr style={{ margin: "30px 0" }} />
-
       <AssignWarriorSection
         player={player}
         onAssign={assignWarrior}
       />
-
       {showEditModal && (
         <EditPlayerModal
           player={player}

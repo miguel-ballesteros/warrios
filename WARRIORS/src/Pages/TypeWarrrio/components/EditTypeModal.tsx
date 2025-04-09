@@ -6,17 +6,14 @@ interface EditTypeModalProps {
   onSave: (updated: TypeWarrior) => void
   onCancel: () => void
 }
-
 export default function EditTypeModal({ typeWarrior, onSave, onCancel }: EditTypeModalProps) {
   const [name, setName] = useState(typeWarrior.name)
   const [description, setDescription] = useState(typeWarrior.description)
   const [basePower, setBasePower] = useState(typeWarrior.basePower)
-
   const handleSubmit = () => {
     const updated = new TypeWarrior(typeWarrior.id, name, description, basePower)
     onSave(updated)
   }
-
   return (
     <div style={modalStyles.overlay}>
       <div style={modalStyles.container}>
@@ -50,7 +47,6 @@ export default function EditTypeModal({ typeWarrior, onSave, onCancel }: EditTyp
     </div>
   )
 }
-
 const modalStyles = {
   overlay: {
     position: "fixed" as const,

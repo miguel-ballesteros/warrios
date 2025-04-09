@@ -1,8 +1,8 @@
-import LeftHalfModal from "../../components/LeftHalfModal";
-import BreedList from "./components/BreedList";
+import LeftHalfModal from "../../components/LeftHalfModal"
+import BreedList from "./components/BreedList"
 
 interface InfoBreedProps {
-  onClose: () => void;
+  onClose: () => void
 }
 
 export default function InfoBreed({ onClose }: InfoBreedProps) {
@@ -10,7 +10,7 @@ export default function InfoBreed({ onClose }: InfoBreedProps) {
     <>
       <LeftHalfModal onClose={onClose}>
         <h2 style={{ marginTop: 0, fontSize: "24px" }}>
-          🧬 Información de la Raza
+           Información de la Raza
         </h2>
         <BreedList />
         <div
@@ -34,10 +34,10 @@ export default function InfoBreed({ onClose }: InfoBreedProps) {
               transition: "background-color 0.3s ease",
             }}
             onMouseOver={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#6b21a8";
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#6b21a8"
             }}
             onMouseOut={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#7e22ce";
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#7e22ce"
             }}
           >
             Cerrar
@@ -45,5 +45,5 @@ export default function InfoBreed({ onClose }: InfoBreedProps) {
         </div>
       </LeftHalfModal>
     </>
-  );
+  )
 }

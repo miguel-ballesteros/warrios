@@ -1,46 +1,41 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import "./styles/PlayerPage.css";
-import { Warrior } from "../../models/Warrior";
-import { Player } from "../../models/Player";
+import React, { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import "./styles/PlayerPage.css"
+import { Warrior } from "../../models/Warrior"
+import { Player } from "../../models/Player"
 
 
 interface Player {
-  id: number;
-  name: string;
-  nickname: string;
-  record: number;
-  life: number;
-  warriors: Warrior[];
+  id: number
+  name: string
+  nickname: string
+  record: number
+  life: number
+  warriors: Warrior[]
 }
 
 export default function PlayerPage() {
-  const [players, setPlayers] = useState<Player[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
-
+  const [players, setPlayers] = useState<Player[]>([])
+  const [isOpen, setIsOpen] = useState(false)
+  const navigate = useNavigate()
   const [form, setForm] = useState({
     name: "",
     nickname: "",
     record: 0,
     life: 100,
-  });
-
+  })
   useEffect(() => {
-    const storedPlayers = localStorage.getItem("players");
+    const storedPlayers = localStorage.getItem("players")
     if (storedPlayers) {
-      setPlayers(JSON.parse(storedPlayers));
+      setPlayers(JSON.parse(storedPlayers))
     }
-  }, []);
-
+  }, [])
   const savePlayersToStorage = (playersToSave: Player[]) => {
-    localStorage.setItem("players", JSON.stringify(playersToSave));
-  };
-
+    localStorage.setItem("players", JSON.stringify(playersToSave))
+  }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
   const handleCreatePlayer = () => {
     const newPlayer: Player = {
       id: Date.now(),
@@ -49,27 +44,25 @@ export default function PlayerPage() {
       record: Number(form.record),
       life: Number(form.life),
       warriors: [],
-    };
+    }
+    const updatedPlayers = [...players, newPlayer]
+    setPlayers(updatedPlayers)
+    savePlayersToStorage(updatedPlayers)
 
-    const updatedPlayers = [...players, newPlayer];
-    setPlayers(updatedPlayers);
-    savePlayersToStorage(updatedPlayers);
-
-    setForm({ name: "", nickname: "", record: 0, life: 100 });
-    setIsOpen(false);
-  };
-
+    setForm({ name: "", nickname: "", record: 0, life: 100 })
+    setIsOpen(false)
+  }
   const handlePlayerClick = (player: Player) => {
-    localStorage.setItem("selectedPlayerId", String(player.id));
-    navigate(`/warriors/player/${player.id}`);
-  };
+    localStorage.setItem("selectedPlayerId", String(player.id))
+    navigate(`/warriors/player/${player.id}`)
+  }
   const handleDeletePlayer = (playerId: number) => {
-    const confirmDelete = window.confirm("¿Estás seguro de eliminar este jugador?");
-    if (!confirmDelete) return;
+    const confirmDelete = window.confirm("¿Estás seguro de eliminar este jugador?")
+    if (!confirmDelete) return
 
-    const updatedPlayers = Player.deletePlayerById(playerId);
-    setPlayers(updatedPlayers);
-  };
+    const updatedPlayers = Player.deletePlayerById(playerId)
+    setPlayers(updatedPlayers)
+  }
   return (
     <div className="page-container">
       <div className="card-container">
@@ -86,8 +79,8 @@ export default function PlayerPage() {
                 <button
                   className="delete-button"
                   onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeletePlayer(player.id);
+                    e.stopPropagation()
+                    handleDeletePlayer(player.id)
                   }}
                 >
                   ✕
@@ -101,7 +94,6 @@ export default function PlayerPage() {
             </div>
           ))}
         </div>
-
         <div className="create-section" onClick={() => setIsOpen(true)}>
           <div className="create-card">
             <div className="plus-icon">+</div>
@@ -109,7 +101,6 @@ export default function PlayerPage() {
           </div>
         </div>
       </div>
-
       {isOpen && (
         <div className="modal-overlay">
           <div className="modal modal-large">
@@ -154,5 +145,5 @@ export default function PlayerPage() {
         </div>
       )}
     </div>
-  );
+  )
 }

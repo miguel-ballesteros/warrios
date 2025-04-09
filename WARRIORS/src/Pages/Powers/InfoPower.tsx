@@ -9,7 +9,7 @@ interface InfoPowerProps {
 export default function InfoPower({ onClose }: InfoPowerProps) {
   return (
     <LeftHalfModal onClose={onClose}>
-      <h2 style={{ marginTop: 0 }}>⚔️ Poderes</h2>
+      <h2 style={{ marginTop: 0 }}>Poderes</h2>
       <PowerList />
       <button
         onClick={onClose}

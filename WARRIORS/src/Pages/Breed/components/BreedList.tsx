@@ -1,37 +1,37 @@
-import { useState } from "react";
-import { Breed } from "../../../models/Breed";
-import EditBreedModal from "./EditBreedModal";
-import { ConfirmDeleteModal } from "../../../components/ConfirmDeleteModal";
-import CreateBreedModal from "./CreateBreedModal";
+import { useState } from "react"
+import { Breed } from "../../../models/Breed"
+import EditBreedModal from "./EditBreedModal"
+import { ConfirmDeleteModal } from "../../../components/ConfirmDeleteModal"
+import CreateBreedModal from "./CreateBreedModal"
 
 export default function BreedList() {
-  const [breeds, setBreeds] = useState<Breed[]>(Breed.getAll());
-  const [selectedBreed, setSelectedBreed] = useState<Breed | null>(null);
-  const [editingBreed, setEditingBreed] = useState<Breed | null>(null);
-  const [creatingNew, setCreatingNew] = useState<boolean>(false);
+  const [breeds, setBreeds] = useState<Breed[]>(Breed.getAll())
+  const [selectedBreed, setSelectedBreed] = useState<Breed | null>(null)
+  const [editingBreed, setEditingBreed] = useState<Breed | null>(null)
+  const [creatingNew, setCreatingNew] = useState<boolean>(false)
 
   const handleDelete = (id: number) => {
-    Breed.deleteById(id);
-    setBreeds(Breed.getAll());
-    setSelectedBreed(null);
-  };
+    Breed.deleteById(id)
+    setBreeds(Breed.getAll())
+    setSelectedBreed(null)
+  }
 
   const handleSaveEdit = (updated: Breed) => {
     if (updated.id === 0) {
-      Breed.create(updated);
+      Breed.create(updated)
     } else {
-      Breed.updateBreed(updated);
+      Breed.updateBreed(updated)
     }
-    setBreeds(Breed.getAll());
-    setEditingBreed(null);
-    setCreatingNew(false);
-  };
+    setBreeds(Breed.getAll())
+    setEditingBreed(null)
+    setCreatingNew(false)
+  }
 
   const gridStyle: React.CSSProperties = {
     display: "grid",
     gridTemplateColumns: "repeat(2, 1fr)",
     gap: "20px",
-  };
+  }
 
   const cardStyle: React.CSSProperties = {
     backgroundColor: "#fff",
@@ -40,7 +40,7 @@ export default function BreedList() {
     border: "1px solid #e9d5ff",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.05)",
     transition: "all 0.3s ease",
-  };
+  }
 
   return (
     <div>
@@ -122,14 +122,14 @@ export default function BreedList() {
       {creatingNew && (
         <CreateBreedModal
           onCreate={(newBreed) => {
-            Breed.create(newBreed);
-            setBreeds(Breed.getAll());
-            setCreatingNew(false);
+            Breed.create(newBreed)
+            setBreeds(Breed.getAll())
+            setCreatingNew(false)
           }}
           onCancel={() => setCreatingNew(false)}
         />
       )}
 
     </div>
-  );
+  )
 }

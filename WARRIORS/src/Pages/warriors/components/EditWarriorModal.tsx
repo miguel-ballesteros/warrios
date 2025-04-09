@@ -11,26 +11,20 @@ export const EditWarriorModal: React.FC<Props> = ({ warrior, onClose, onUpdate }
   const [name, setName] = useState(warrior.name)
   const [life, setLife] = useState(warrior.health)
   const [energy, setEnergy] = useState(warrior.energy)
-
-
   const handleSubmit = () => {
     warrior.update(name, life, energy)
     onUpdate(warrior)
     onClose()
   }
-
   return (
     <div style={modalOverlay}>
       <div style={modalContent}>
         <h2 style={titleStyle}>Editar Guerrero</h2>
-
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           {renderField("Nombre:", name, setName)}
           {renderField("Vida:", life, (val) => setLife(Number(val)), "number")}
           {renderField("Energía:", energy, (val) => setEnergy(Number(val)), "number")}
-
         </div>
-
         <div style={footerStyle}>
           <button style={buttonPrimary} onClick={handleSubmit}>
             Guardar
