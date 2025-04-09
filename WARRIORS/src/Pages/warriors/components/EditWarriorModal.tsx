@@ -9,7 +9,7 @@ interface Props {
 
 export const EditWarriorModal: React.FC<Props> = ({ warrior, onClose, onUpdate }) => {
   const [name, setName] = useState(warrior.name)
-  const [life, setLife] = useState(warrior.life)
+  const [life, setLife] = useState(warrior.health)
   const [energy, setEnergy] = useState(warrior.energy)
 
 

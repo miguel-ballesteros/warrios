@@ -7,7 +7,7 @@ export class Warrior {
     public id: number,
     public name: string,
     public image: string,
-    public life: number,
+    public health: number,
     public energy: number,
     public breed: Breed,
     public typeWarrior: TypeWarrior,
@@ -40,7 +40,7 @@ export class Warrior {
   static create(
     name: string,
     image: string,
-    life: number,
+    health: number,
     energy: number,
     breed: Breed,
     typeWarrior: TypeWarrior,
@@ -54,7 +54,7 @@ export class Warrior {
       Date.now(),
       name,
       image,
-      life,
+      health,
       energy,
       breed,
       typeWarrior,
@@ -64,11 +64,11 @@ export class Warrior {
 
   update(
     name: string,
-    life: number,
+    health: number,
     energy: number,
   ) {
     this.name = name;
-    this.life = life;
+    this.health = health;
     this.energy = energy;
   }
 

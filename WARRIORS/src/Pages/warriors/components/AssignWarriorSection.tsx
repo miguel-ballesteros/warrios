@@ -217,7 +217,7 @@ console.log(filteredWarriors)
                   marginBottom: "12px",
                 }}
               >
-                <div>Vida: {warrior.life}</div>
+                <div>Vida: {warrior.health}</div>
                 <div>Energía: {warrior.energy}</div>
                 <div>Raza: {warrior.breed?.name ?? "Sin raza"}</div>
                 <div>Tipo: {warrior.typeWarrior?.name ?? "Sin tipo"}</div>

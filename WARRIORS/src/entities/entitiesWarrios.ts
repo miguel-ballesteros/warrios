@@ -13,7 +13,7 @@ export interface Power {
 export interface Warrior {
   id: number;
   name: string;
-  life: number;
+  health: number;
   energy: number;
   breed: Breed;
   type: TypeWarrior;

@@ -28,7 +28,7 @@ export async function generateWarriors(): Promise<Warrior[]> {
 
   const warriors: Warrior[] = []
 
-  for (let i = 1; i <= 20; i++) {
+  for (let i = 1; i <= 11; i++) {
     const randomBreed = breeds[Math.floor(Math.random() * breeds.length)]
     const randomType = types[Math.floor(Math.random() * types.length)]
     const randomPowers = [powers[Math.floor(Math.random() * powers.length)]]

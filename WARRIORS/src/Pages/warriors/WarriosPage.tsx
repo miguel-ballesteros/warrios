@@ -104,7 +104,7 @@ export default function WarriosPage() {
       return
     }
 
-    player.assignWarrior(warrior)
+    player.AssignWarriosToPlayer(warrior)
 
     const updatedPlayer = new Player(
       player.id,
@@ -256,7 +256,7 @@ export default function WarriosPage() {
               }}
             >
               <span>
-                ⚔️ {w.name} (vida: {w.life}, energía: {w.energy})
+                ⚔️ {w.name} (vida: {w.health}, energía: {w.energy})
               </span>
               <button
                 onClick={() => removeWarrior(w.id)}

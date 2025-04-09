@@ -4,6 +4,7 @@ import "./styles/PlayerPage.css";
 import { Warrior } from "../../models/Warrior";
 import { Player } from "../../models/Player";
 
+
 interface Player {
   id: number;
   name: string;

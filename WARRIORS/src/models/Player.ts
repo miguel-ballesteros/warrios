@@ -11,7 +11,7 @@ export class Player {
 
   ) {}
 
-  assignWarrior(warrior: Warrior) {
+  AssignWarriosToPlayer(warrior: Warrior) {
     this.warriors.push(warrior);
   }
 
@@ -23,12 +23,9 @@ export class Player {
     return this.warriors;
   }
 
-  updateInfo(newName: string, newNickname: string, newImage?: string) {
+  updateInfo(newName: string, newNickname: string) {
     this.name = newName;
     this.nickname = newNickname;
-    if (newImage !== undefined) {
-      this.image = newImage;
-    }
   }
 
   static deletePlayerById(playerId: number): Player[] {
