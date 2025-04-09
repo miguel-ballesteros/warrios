@@ -110,51 +110,43 @@ export default function WarriosPage() {
     <div style={{ padding: "20px" }}>
       <div
         style={{
-          background: "rgb(148, 146, 146)",
-          padding: "25px 35px",
-          borderRadius: "16px",
-          color: "#fff",
+          background: "#f9f9f9",
+          padding: "20px 30px",
+          borderRadius: "12px",
+          border: "1px solid #ddd",
+          color: "#333",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: "30px",
-          fontFamily: "'Press Start 2P', cursive",
+          marginBottom: "25px",
+          fontFamily: "Arial, sans-serif",
+          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.05)",
           position: "relative",
-          overflow: "hidden",
         }}
       >
-        <div
-          style={{
-            position: "absolute",
-            top: "-50px",
-            left: "-50px",
-            width: "150px",
-            height: "150px",
-            background: "rgba(70, 67, 68, 0.2)",
-            borderRadius: "50%",
-            filter: "blur(60px)",
-            zIndex: 0,
-          }}
-        ></div>
-        <div style={{ zIndex: 1 }}>
-          <p style={{ margin: 0, fontSize: "16px", fontWeight: "bold" }}>
-            🎮 {player.name}{" "}
-            <span style={{ fontSize: "12px", opacity: 0.8 }}>
+        <div>
+          <p style={{ margin: 0, fontSize: "16px", fontWeight: "600" }}>
+            {player.name}{" "}
+            <span style={{ fontSize: "13px", color: "#777", fontWeight: "normal" }}>
               ({player.nickname})
             </span>
           </p>
-          <p style={{ margin: "8px 0 0", fontSize: "13px" }}>📊 Record: {player.record}</p>
+          <p style={{ margin: "6px 0 0", fontSize: "14px", color: "#555" }}>
+            Record: {player.record}
+          </p>
           <div style={{ display: "flex", alignItems: "center", marginTop: "10px" }}>
-            <span style={{ marginRight: "10px", fontSize: "13px" }}>❤️ Vida:</span>
+            <span style={{ marginRight: "10px", fontSize: "13px", color: "#666" }}>
+              Vida:
+            </span>
             <div
               style={{
-                background: "#333",
-                borderRadius: "8px",
-                width: "180px",
-                height: "18px",
+                background: "#e0e0e0",
+                borderRadius: "6px",
+                width: "160px",
+                height: "12px",
                 overflow: "hidden",
-                border: "1px solid #666",
                 position: "relative",
+                border: "1px solid #ccc",
               }}
             >
               <div
@@ -162,57 +154,64 @@ export default function WarriosPage() {
                   width: `${player.life}%`,
                   background:
                     player.life > 50
-                      ? "linear-gradient(to right, #0f0, #8f8)"
+                      ? "#4caf50"
                       : player.life > 25
-                        ? "linear-gradient(to right, #ffa500, #ffcc70)"
-                        : "linear-gradient(to right, #f00, #f88)",
+                        ? "#ff9800"
+                        : "#f44336",
                   height: "100%",
                   transition: "width 0.3s ease-in-out",
                 }}
               ></div>
             </div>
-            <span style={{ marginLeft: "10px", fontSize: "13px" }}>
+            <span style={{ marginLeft: "10px", fontSize: "13px", color: "#444" }}>
               {player.life}%
             </span>
           </div>
         </div>
-        <div style={{ display: "flex", gap: "12px", zIndex: 1 }}>
+        <div style={{ display: "flex", gap: "10px" }}>
           <button
             onClick={() => setShowEditModal(true)}
             style={{
-              background: "#44aaff",
-              color: "#fff",
-              border: "none",
-              borderRadius: "10px",
-              padding: "10px 18px",
+              backgroundColor: "#f8f8f8",
+              color: "#1976d2",
+              border: "1px solid #1976d2",
+              borderRadius: "6px",
+              padding: "8px 14px",
               cursor: "pointer",
-              fontSize: "12px",
-              fontWeight: "bold",
-              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
-              transition: "background 0.2s",
+              fontSize: "13px",
+              fontWeight: "500",
+              transition: "all 0.2s",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "#1c89e5")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "#44aaff")}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#f0f8ff";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent";
+            }}
           >
-             Editar
+            Editar
           </button>
           <button
             onClick={deletePlayer}
             style={{
-              background: "#ff4444",
-              color: "#fff",
-              border: "none",
-              borderRadius: "10px",
-              padding: "10px 18px",
+              background: "transparent",
+              color: "#e53935",
+              border: "1px solid #e53935",
+              borderRadius: "6px",
+              padding: "8px 14px",
               cursor: "pointer",
-              fontSize: "12px",
-              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
-              transition: "background 0.2s",
+              fontSize: "13px",
+              fontWeight: "500",
+              transition: "all 0.2s",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "#cc0000")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "#ff4444")}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#fff5f5";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent";
+            }}
           >
-             Eliminar
+            Eliminar
           </button>
         </div>
       </div>
