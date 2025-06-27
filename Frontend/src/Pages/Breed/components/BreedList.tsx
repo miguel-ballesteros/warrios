@@ -1,107 +1,84 @@
-import { useState } from "react"
-import { Breed } from "../../../models/Breed"
+import { useEffect, useState } from "react"
+import { Breed, EditBrred } from "../../../models/Breed"
 import EditBreedModal from "./EditBreedModal"
 import { ConfirmDeleteModal } from "../../../components/ConfirmDeleteModal"
 import CreateBreedModal from "./CreateBreedModal"
+import {
+  getAllBreeds,
+  createBreed,
+  updateBreed,
+  deleteBreed,
+} from "../service/service"
 
 export default function BreedList() {
-  const [breeds, setBreeds] = useState<Breed[]>(Breed.getAll())
-  const [selectedBreed, setSelectedBreed] = useState<Breed | null>(null)
-  const [editingBreed, setEditingBreed] = useState<Breed | null>(null)
+  const [breeds, setBreeds] = useState<EditBrred[]>([])
+  const [selectedBreed, setSelectedBreed] = useState<EditBrred | null>(null)
+  const [editingBreed, setEditingBreed] = useState<EditBrred | null>(null)
   const [creatingNew, setCreatingNew] = useState<boolean>(false)
 
-  const handleDelete = (id: number) => {
-    Breed.deleteById(id)
-    setBreeds(Breed.getAll())
+  useEffect(() => {
+    fetchBreeds()
+  }, [])
+
+  const fetchBreeds = async () => {
+    const data = await getAllBreeds()
+    setBreeds(data)
+  }
+
+  const handleDelete = async (id: number) => {
+    await deleteBreed(id)
+    fetchBreeds()
     setSelectedBreed(null)
   }
 
-  const handleSaveEdit = (updated: Breed) => {
+  const handleSaveEdit = async (updated: Breed) => {
     if (updated.id === 0) {
-      Breed.create(updated)
+      await createBreed(updated)
     } else {
-      Breed.updateBreed(updated)
+      await updateBreed(updated)
     }
-    setBreeds(Breed.getAll())
+    fetchBreeds()
     setEditingBreed(null)
     setCreatingNew(false)
   }
 
-  const gridStyle: React.CSSProperties = {
-    display: "grid",
-    gridTemplateColumns: "repeat(2, 1fr)",
-    gap: "20px",
-  }
-
-  const cardStyle: React.CSSProperties = {
-    backgroundColor: "#fff",
-    borderRadius: "16px",
-    padding: "20px",
-    border: "1px solid #e9d5ff",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.05)",
-    transition: "all 0.3s ease",
-  }
-
   return (
-    <div>
-      <div style={gridStyle}>
-      <div
-          style={{
-            ...cardStyle,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            color: "#7e22ce",
-            fontWeight: "bold",
-            fontSize: "24px",
-          }}
+    <div className="p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div
+          className="bg-white border border-black rounded-2xl p-6 text-black font-bold text-3xl flex items-center justify-center hover:bg-gray-100 cursor-pointer transition"
           onClick={() => setCreatingNew(true)}
         >
           ＋
         </div>
+
         {breeds.map((breed) => (
-          <div key={breed.id} style={cardStyle}>
-            <h2 style={{ fontSize: "18px", color: "#6b21a8", marginBottom: "8px" }}>
+          <div
+            key={breed.id}
+            className="bg-white border border-black rounded-xl p-5 shadow-sm hover:shadow-md transition"
+          >
+            <h2 className="text-lg font-semibold text-black mb-2">
               🧬 {breed.name}
             </h2>
-            <p style={{ marginBottom: "4px", color: "#374151" }}>
-              <strong>Descripción:</strong> {breed.description}
+            <p className="text-gray-800 mb-4">
+              <strong>Resistencia:</strong> {breed.breed_Resistance}
             </p>
-            <p style={{ marginBottom: "16px", color: "#374151" }}>
-              <strong>Resistencia:</strong> {breed.breedResistance}
-            </p>
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
+            <div className="flex justify-end gap-2">
               <button
                 onClick={() => setEditingBreed(breed)}
-                style={{
-                  backgroundColor: "#3b82f6",
-                  color: "#fff",
-                  padding: "6px 12px",
-                  borderRadius: "6px",
-                  border: "none",
-                  cursor: "pointer",
-                }}
+                className="bg-black text-white px-4 py-1 rounded hover:bg-gray-900 transition"
               >
                 Editar
               </button>
               <button
                 onClick={() => setSelectedBreed(breed)}
-                style={{
-                  backgroundColor: "#ef4444",
-                  color: "#fff",
-                  padding: "6px 12px",
-                  borderRadius: "6px",
-                  border: "none",
-                  cursor: "pointer",
-                }}
+                className="bg-white border border-black text-black px-4 py-1 rounded hover:bg-gray-200 transition"
               >
                 Eliminar
               </button>
             </div>
           </div>
         ))}
-
       </div>
 
       {selectedBreed && (
@@ -111,6 +88,7 @@ export default function BreedList() {
           onCancel={() => setSelectedBreed(null)}
         />
       )}
+
       {editingBreed && (
         <EditBreedModal
           breed={editingBreed}
@@ -121,15 +99,14 @@ export default function BreedList() {
 
       {creatingNew && (
         <CreateBreedModal
-          onCreate={(newBreed) => {
-            Breed.create(newBreed)
-            setBreeds(Breed.getAll())
+          onCreate={async (newBreed) => {
+            await createBreed(newBreed)
+            fetchBreeds()
             setCreatingNew(false)
           }}
           onCancel={() => setCreatingNew(false)}
         />
       )}
-
     </div>
   )
 }

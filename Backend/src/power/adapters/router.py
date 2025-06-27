@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from core.database import get_db
-from power.infrastructure.power_schema import PowerCreate, PowerOut
-from power.application.service import power_service
+from src.power.infrastructure.power_schema import PowerCreate, PowerOut
+from src.power.application.service import power_service
 
 router = APIRouter(prefix="/powers", tags=["Powers"])
 

@@ -1,7 +1,6 @@
 import LeftHalfModal from "../../components/LeftHalfModal"
 import PowerList from "./components/PowerList"
 
-
 interface InfoPowerProps {
   onClose: () => void
 }
@@ -9,22 +8,16 @@ interface InfoPowerProps {
 export default function InfoPower({ onClose }: InfoPowerProps) {
   return (
     <LeftHalfModal onClose={onClose}>
-      <h2 style={{ marginTop: 0 }}>Poderes</h2>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-black">Poderes</h2>
+        <button
+          onClick={onClose}
+          className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition"
+        >
+          Cerrar
+        </button>
+      </div>
       <PowerList />
-      <button
-        onClick={onClose}
-        style={{
-          marginTop: "24px",
-          padding: "8px 16px",
-          borderRadius: "8px",
-          backgroundColor: "#9333ea",
-          color: "#fff",
-          cursor: "pointer",
-          float: "right"
-        }}
-      >
-        Cerrar
-      </button>
     </LeftHalfModal>
   )
 }

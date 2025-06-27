@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from models.models import Games
-from games.infrastructure.game_schema import GameCreate, GameUpdate
+from src.games.infrastructure.game_schema import GameCreate, GameUpdate
 
 class GameRepository:
     def __init__(self, db: Session):

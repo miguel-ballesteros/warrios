@@ -8,6 +8,7 @@ class WarriorCreate(BaseModel):
     power_fk: int
     warriors_health: int
     warriors_energy: int
+    warriors_image: Optional[str]
 
 class WarriorUpdate(BaseModel):
     warrior_name: Optional[str]

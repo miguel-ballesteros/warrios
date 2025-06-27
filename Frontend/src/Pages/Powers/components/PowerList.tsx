@@ -1,100 +1,90 @@
-import { useState } from "react"
-import { Power } from "../../../models/Power"
+import { useEffect, useState } from "react"
+import { CreatePower,  UpdatePower } from "../../../models/Power"
 import { ConfirmDeleteModal } from "../../../components/ConfirmDeleteModal"
 import EditPowerModal from "./EditPowerModal"
 import CreatePowerModal from "./CreatePowerModal"
+import {
+  getAllPowers,
+  createPower,
+  updatePower,
+  deletePower
+} from "../service/service"
+
 export default function PowerList() {
-  const [powers, setPowers] = useState<Power[]>(Power.getAll())
-  const [selectedPower, setSelectedPower] = useState<Power | null>(null)
-  const [editingPower, setEditingPower] = useState<Power | null>(null)
+  const [powers, setPowers] = useState<UpdatePower[]>([])
+  const [selectedPower, setSelectedPower] = useState<UpdatePower | null>(null)
+  const [editingPower, setEditingPower] = useState<UpdatePower | null>(null)
   const [creating, setCreating] = useState(false)
-  const handleDelete = (id: number) => {
-    Power.deleteById(id)
-    setPowers(Power.getAll())
+
+  useEffect(() => {
+    fetchPowers()
+  }, [])
+
+  const fetchPowers = async () => {
+    const data = await getAllPowers()
+    setPowers(data)
+  }
+
+  const handleDelete = async (id: number) => {
+    await deletePower(id)
+    fetchPowers()
     setSelectedPower(null)
   }
-  const handleSaveEdit = (updated: Power) => {
-    Power.update(updated)
-    setPowers(Power.getAll())
+
+  const handleSaveEdit = async (updated: UpdatePower) => {
+    await updatePower(updated)
+    fetchPowers()
     setEditingPower(null)
   }
-  const handleCreate = (newPower: Power) => {
-    Power.create(newPower)
-    setPowers(Power.getAll())
+
+  const handleCreate = async (newPower: CreatePower) => {
+    await createPower(newPower)
+    fetchPowers()
     setCreating(false)
   }
+
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4">
+      {/* Crear nuevo poder */}
       <div
         onClick={() => setCreating(true)}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#f3e8ff",
-          border: "2px dashed #a855f7",
-          cursor: "pointer",
-          borderRadius: "16px",
-          height: "160px",
-          minWidth: "250px",
-          flex: "1 1 calc(33.33% - 20px)",
-          boxShadow: "0 4px 8px rgba(0,0,0,0.05)"
-        }}
+        className="flex items-center justify-center h-40 min-w-[250px] border-2 border-dashed border-gray-400 bg-gray-100 rounded-2xl shadow hover:shadow-md cursor-pointer transition"
       >
-        <span style={{ fontSize: "32px", color: "#9333ea" }}>＋</span>
+        <span className="text-4xl text-gray-800">＋</span>
       </div>
+
+      {/* Lista de poderes */}
       {powers.map((power) => (
         <div
           key={power.id}
-          style={{
-            background: "#fff",
-            border: "1px solid #e0d4f7",
-            padding: "20px",
-            borderRadius: "16px",
-            boxShadow: "0 4px 8px rgba(0,0,0,0.05)",
-            flex: "1 1 calc(33.33% - 20px)",
-            minWidth: "250px",
-            height: "160px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between"
-          }}
+          className="bg-white border border-gray-300 p-5 rounded-2xl shadow hover:shadow-md transition flex flex-col justify-between h-40"
         >
           <div>
-            <h2 style={{ color: "#6b21a8", fontWeight: "600" }}>💥 {power.name}</h2>
-            <p><strong>Daño:</strong> {power.damage}</p>
-            <p><strong>Efecto:</strong> {power.effect}</p>
+            <h2 className="text-lg font-bold text-gray-900 mb-1">💥 {power.name}</h2>
+            <p className="text-sm text-gray-700">
+              <strong>Daño:</strong> {power.attack_power}
+            </p>
+            <p className="text-sm text-gray-700">
+              <strong>Efecto:</strong> {power.power_effect}
+            </p>
           </div>
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
+          <div className="flex justify-end gap-2 pt-2">
             <button
               onClick={() => setEditingPower(power)}
-              style={{
-                backgroundColor: "#3b82f6",
-                color: "#fff",
-                border: "none",
-                padding: "6px 10px",
-                borderRadius: "8px",
-                cursor: "pointer"
-              }}
+              className="bg-gray-800 text-white text-sm px-4 py-1 rounded-lg hover:bg-gray-900 transition"
             >
               Editar
             </button>
             <button
               onClick={() => setSelectedPower(power)}
-              style={{
-                backgroundColor: "#ef4444",
-                color: "#fff",
-                border: "none",
-                padding: "6px 10px",
-                borderRadius: "8px",
-                cursor: "pointer"
-              }}
+              className="bg-red-600 text-white text-sm px-4 py-1 rounded-lg hover:bg-red-700 transition"
             >
               Eliminar
             </button>
           </div>
         </div>
       ))}
+
       {selectedPower && (
         <ConfirmDeleteModal
           warriorName={selectedPower.name}
@@ -102,6 +92,7 @@ export default function PowerList() {
           onCancel={() => setSelectedPower(null)}
         />
       )}
+
       {editingPower && (
         <EditPowerModal
           power={editingPower}
@@ -109,6 +100,7 @@ export default function PowerList() {
           onCancel={() => setEditingPower(null)}
         />
       )}
+
       {creating && (
         <CreatePowerModal
           onCreate={handleCreate}

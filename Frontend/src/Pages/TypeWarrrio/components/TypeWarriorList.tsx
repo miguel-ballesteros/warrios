@@ -1,104 +1,87 @@
-import { useState } from "react"
-import { TypeWarrior } from "../../../models/TypeWarrior"
-
+import { useEffect, useState } from "react"
+import { EditTypeWarrior, TypeWarrior } from "../../../models/TypeWarrior"
 import { ConfirmDeleteModal } from "../../../components/ConfirmDeleteModal"
 import EditTypeModal from "./EditTypeModal"
 import CreateTypeModal from "./CreateTypeModal"
+import {
+  getAllTypeWarriors,
+  createTypeWarrior,
+  updateTypeWarrior,
+  deleteTypeWarrior,
+} from "../service/service"
 
 export default function TypeWarriorList() {
-  const [types, setTypes] = useState<TypeWarrior[]>(TypeWarrior.getAll())
-  const [selectedType, setSelectedType] = useState<TypeWarrior | null>(null)
-  const [editingType, setEditingType] = useState<TypeWarrior | null>(null)
+  const [types, setTypes] = useState<EditTypeWarrior[]>([])
+  const [selectedType, setSelectedType] = useState<EditTypeWarrior | null>(null)
+  const [editingType, setEditingType] = useState<EditTypeWarrior | null>(null)
   const [creating, setCreating] = useState(false)
-  const handleDelete = (id: number) => {
-    TypeWarrior.deleteById(id)
-    setTypes(TypeWarrior.getAll())
+
+  useEffect(() => {
+    fetchTypes()
+  }, [])
+
+  const fetchTypes = async () => {
+    const data = await getAllTypeWarriors()
+    setTypes(data)
+  }
+
+  const handleDelete = async (id: number) => {
+    await deleteTypeWarrior(id)
+    fetchTypes()
     setSelectedType(null)
   }
-  const handleSaveEdit = (updated: TypeWarrior) => {
-    TypeWarrior.update(updated)
-    setTypes(TypeWarrior.getAll())
+
+  const handleSaveEdit = async (updated: TypeWarrior) => {
+    await updateTypeWarrior(updated)
+    fetchTypes()
     setEditingType(null)
   }
-  const handleCreate = (newType: TypeWarrior) => {
-    TypeWarrior.create(newType)
-    setTypes(TypeWarrior.getAll())
+
+  const handleCreate = async (newType: TypeWarrior) => {
+    await createTypeWarrior(newType)
+    fetchTypes()
     setCreating(false)
   }
+
   return (
-    <div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
-        <div
-          onClick={() => setCreating(true)}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "#f3e8ff",
-            border: "2px dashed #a855f7",
-            cursor: "pointer",
-            borderRadius: "16px",
-            height: "160px",
-            minWidth: "250px",
-            flex: "1 1 calc(33.33% - 20px)",
-            boxShadow: "0 4px 8px rgba(0,0,0,0.05)"
-          }}
-        >
-          <span style={{ fontSize: "32px", color: "#9333ea" }}>＋</span>
-        </div>
-        {types.map((type) => (
-          <div
-            key={type.id}
-            style={{
-              background: "#fff",
-              border: "1px solid #e0d4f7",
-              padding: "20px",
-              borderRadius: "16px",
-              boxShadow: "0 4px 8px rgba(0,0,0,0.05)",
-              flex: "1 1 calc(33.33% - 20px)",
-              minWidth: "250px",
-              height: "160px",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between"
-            }}
-          >
-            <div>
-              <h2 style={{ color: "#6b21a8", fontWeight: "600" }}>⚔️ {type.name}</h2>
-              <p><strong>Descripción:</strong> {type.description}</p>
-              <p><strong>Poder base:</strong> {type.basePower}</p>
-            </div>
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "10px" }}>
-              <button
-                onClick={() => setEditingType(type)}
-                style={{
-                  backgroundColor: "#3b82f6",
-                  color: "#fff",
-                  border: "none",
-                  padding: "6px 10px",
-                  borderRadius: "8px",
-                  cursor: "pointer"
-                }}
-              >
-                Editar
-              </button>
-              <button
-                onClick={() => setSelectedType(type)}
-                style={{
-                  backgroundColor: "#ef4444",
-                  color: "#fff",
-                  border: "none",
-                  padding: "6px 10px",
-                  borderRadius: "8px",
-                  cursor: "pointer"
-                }}
-              >
-                Eliminar
-              </button>
-            </div>
-          </div>
-        ))}
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div
+        onClick={() => setCreating(true)}
+        className="bg-white border-2 border-dashed border-black rounded-xl p-6 flex items-center justify-center text-3xl text-black font-bold cursor-pointer hover:bg-gray-50"
+      >
+        ＋
       </div>
+
+      {types.map((type) => (
+        <div
+          key={type.id}
+          className="bg-white border border-gray-300 rounded-xl p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between"
+        >
+          <div>
+            <h2 className="text-lg font-semibold text-black mb-1">
+              ⚔️ {type.name}
+            </h2>
+            <p className="text-gray-700 text-sm mb-1">
+              <strong>Descripción:</strong> {type.description}
+            </p>
+          </div>
+          <div className="flex justify-end gap-2 mt-4">
+            <button
+              onClick={() => setEditingType(type)}
+              className="bg-black text-white px-4 py-1 rounded hover:bg-gray-900 transition"
+            >
+              Editar
+            </button>
+            <button
+              onClick={() => setSelectedType(type)}
+              className="bg-white border border-black text-black px-4 py-1 rounded hover:bg-gray-200 transition"
+            >
+              Eliminar
+            </button>
+          </div>
+        </div>
+      ))}
+
       {selectedType && (
         <ConfirmDeleteModal
           warriorName={selectedType.name}
@@ -106,6 +89,7 @@ export default function TypeWarriorList() {
           onCancel={() => setSelectedType(null)}
         />
       )}
+
       {editingType && (
         <EditTypeModal
           typeWarrior={editingType}
@@ -113,6 +97,7 @@ export default function TypeWarriorList() {
           onCancel={() => setEditingType(null)}
         />
       )}
+
       {creating && (
         <CreateTypeModal
           onCreate={handleCreate}

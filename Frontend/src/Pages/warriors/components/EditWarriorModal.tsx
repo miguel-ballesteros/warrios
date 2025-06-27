@@ -11,26 +11,67 @@ export const EditWarriorModal: React.FC<Props> = ({ warrior, onClose, onUpdate }
   const [name, setName] = useState(warrior.name)
   const [life, setLife] = useState(warrior.health)
   const [energy, setEnergy] = useState(warrior.energy)
-  const handleSubmit = () => {
-    warrior.update(name, life, energy)
-    onUpdate(warrior)
-    onClose()
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async () => {
+    setLoading(true)
+    const API_URL = "http://127.0.0.1:8000/api/v1"
+    try {
+      const response = await fetch(`${API_URL}/warriors/${warrior.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          warrior_name: name,
+          warriors_health: life,
+          warriors_energy: energy,
+          breed_fk: warrior.breed?.id ?? 0,
+          type_Warrior_fk: warrior.typeWarrior?.id ?? 0,
+          power_fk: warrior.powers?.[0]?.id ?? 0, // o ajusta si son múltiples poderes
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Error al actualizar el guerrero")
+      }
+
+      const updated = await response.json()
+      onUpdate(updated)
+      onClose()
+    } catch (error) {
+      alert("Hubo un error al actualizar el guerrero.")
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
   }
+
   return (
-    <div style={modalOverlay}>
-      <div style={modalContent}>
-        <h2 style={titleStyle}>Editar Guerrero</h2>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          {renderField("Nombre:", name, setName)}
-          {renderField("Vida:", life, (val) => setLife(Number(val)), "number")}
-          {renderField("Energía:", energy, (val) => setEnergy(Number(val)), "number")}
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md">
+        <h2 className="text-xl font-bold mb-6 text-center">Editar Guerrero</h2>
+
+        <div className="space-y-4">
+          <Field label="Nombre" value={name} onChange={setName} />
+          <Field label="Vida" type="number" value={life} onChange={(val) => setLife(Number(val))} />
+          <Field label="Energía" type="number" value={energy} onChange={(val) => setEnergy(Number(val))} />
         </div>
-        <div style={footerStyle}>
-          <button style={buttonPrimary} onClick={handleSubmit}>
-            Guardar
-          </button>
-          <button style={buttonSecondary} onClick={onClose}>
+
+        <div className="flex justify-end mt-6 gap-3">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition"
+            disabled={loading}
+          >
             Cancelar
+          </button>
+          <button
+            onClick={handleSubmit}
+            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+            disabled={loading}
+          >
+            {loading ? "Guardando..." : "Guardar"}
           </button>
         </div>
       </div>
@@ -38,77 +79,21 @@ export const EditWarriorModal: React.FC<Props> = ({ warrior, onClose, onUpdate }
   )
 }
 
-const renderField = (
-  label: string,
-  value: string | number,
-  onChange: (val: string) => void,
-  type: "text" | "number" = "text"
-) => (
-  <div style={{ display: "flex", alignItems: "center" }}>
-    <label style={{ width: "140px", fontWeight: 600 }}>{label}</label>
+interface FieldProps {
+  label: string
+  value: string | number
+  onChange: (val: string) => void
+  type?: "text" | "number"
+}
+
+const Field: React.FC<FieldProps> = ({ label, value, onChange, type = "text" }) => (
+  <div className="flex items-center">
+    <label className="w-28 font-semibold">{label}</label>
     <input
       type={type}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      style={inputStyle}
+      className="flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-black"
     />
   </div>
 )
-
-const modalOverlay: React.CSSProperties = {
-  position: "fixed",
-  top: 0,
-  left: 0,
-  width: "100vw",
-  height: "100vh",
-  backgroundColor: "rgba(0, 0, 0, 0.6)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  zIndex: 9999,
-}
-
-const modalContent: React.CSSProperties = {
-  backgroundColor: "#fff",
-  padding: "30px",
-  borderRadius: "12px",
-  width: "500px",
-  boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
-}
-
-const titleStyle: React.CSSProperties = {
-  marginBottom: "20px",
-  textAlign: "center",
-}
-
-const footerStyle: React.CSSProperties = {
-  display: "flex",
-  justifyContent: "space-between",
-  marginTop: "30px",
-}
-
-const inputStyle: React.CSSProperties = {
-  flex: 1,
-  padding: "8px 12px",
-  borderRadius: "6px",
-  border: "1px solid #ccc",
-  fontSize: "14px",
-}
-
-const buttonPrimary: React.CSSProperties = {
-  backgroundColor: "#4CAF50",
-  color: "white",
-  border: "none",
-  padding: "10px 20px",
-  borderRadius: "6px",
-  cursor: "pointer",
-}
-
-const buttonSecondary: React.CSSProperties = {
-  backgroundColor: "#f44336",
-  color: "white",
-  border: "none",
-  padding: "10px 20px",
-  borderRadius: "6px",
-  cursor: "pointer",
-}

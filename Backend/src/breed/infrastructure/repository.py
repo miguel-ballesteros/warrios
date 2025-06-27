@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from models.models import Breed
-from breed.infrastructure.breed_schema import BreedCreate, BreedUpdate
+from src.breed.infrastructure.breed_schema import BreedCreate, BreedUpdate
 
 class BreedRepository:
     def __init__(self, db: Session):

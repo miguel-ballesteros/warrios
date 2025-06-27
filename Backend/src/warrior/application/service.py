@@ -1,5 +1,5 @@
-from warrior.infrastructure.warrior_schema import WarriorCreate, WarriorUpdate
-from warrior.infrastructure.repository import WarriorRepository
+from src.warrior.infrastructure.warrior_schema import WarriorCreate, WarriorUpdate
+from src.warrior.infrastructure.repository import WarriorRepository
 
 class WarriorService:
     def __init__(self, repo: WarriorRepository):

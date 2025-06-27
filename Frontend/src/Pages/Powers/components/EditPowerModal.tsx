@@ -1,104 +1,99 @@
-import { useState } from "react"
-import { Power } from "../../../models/Power"
+import { Formik, Form, Field, ErrorMessage } from "formik"
+import { UpdatePower } from "../../../models/Power"
 
 interface EditPowerModalProps {
-  power: Power
-  onSave: (updated: Power) => void
+  power: UpdatePower
+  onSave: (updated: UpdatePower) => void
   onCancel: () => void
 }
+
 export default function EditPowerModal({ power, onSave, onCancel }: EditPowerModalProps) {
-  const [name, setName] = useState(power.name)
-  const [damage, setDamage] = useState<number>(power.damage)
-  const [effect, setEffect] = useState(power.effect)
-  const handleSave = () => {
-    const updatedPower = new Power(power.id, name, damage, effect)
-    onSave(updatedPower)
-  }
   return (
-    <div style={styles.overlay}>
-      <div style={styles.modal}>
-        <h2 style={{ marginTop: 0, textAlign: "center" }}>✏️ Editar Poder</h2>
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "16px" }}>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Nombre del poder"
-            style={styles.input}
-          />
-          <input
-            type="number"
-            value={damage}
-            onChange={(e) => setDamage(Number(e.target.value))}
-            placeholder="Daño"
-            style={{ ...styles.input, resize: "none", height: "80px" }}
-          />
-          <input
-            type="text"
-            value={effect}
-            onChange={(e) => setEffect(e.target.value)}
-            placeholder="Efecto"
-            style={styles.input}
-          />
-        </div>
-        <div style={styles.actions}>
-          <button onClick={onCancel} style={styles.cancelButton}>
-            Cancelar
-          </button>
-          <button onClick={handleSave} style={styles.saveButton}>
-            Guardar
-          </button>
-        </div>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-lg">
+        <h2 className="text-xl font-semibold text-center text-black mb-4">✏️ Editar Poder</h2>
+
+        <Formik
+          initialValues={{ name: power.name, damage: String(power.attack_power), effect: power.power_effect }}
+          validate={(values) => {
+            const errors: { [key: string]: string } = {}
+            if (!values.name) errors.name = "Requerido"
+            if (!values.damage || isNaN(Number(values.damage)) || Number(values.damage) <= 0)
+              errors.damage = "Debe ser un número positivo"
+            if (!values.effect) errors.effect = "Requerido"
+            return errors
+          }}
+          onSubmit={(values) => {
+            const updatedPower:UpdatePower = {
+              id: power.id,
+               name: values.name,
+              attack_power: Number(values.damage),
+              power_effect: values.effect
+            }
+            onSave(updatedPower)
+          }}
+        >
+          {() => (
+            <Form className="space-y-4">
+              <div>
+                <Field
+                  name="name"
+                  placeholder="Nombre del poder"
+                  className="w-full px-4 py-2 border border-black rounded-lg text-black bg-white placeholder-gray-500"
+                />
+                <ErrorMessage
+                  name="name"
+                  component="div"
+                  className="text-sm text-red-600 mt-1"
+                />
+              </div>
+
+              <div>
+                <Field
+                  name="damage"
+                  type="number"
+                  placeholder="Daño"
+                  className="w-full px-4 py-2 border border-black rounded-lg text-black bg-white placeholder-gray-500"
+                />
+                <ErrorMessage
+                  name="damage"
+                  component="div"
+                  className="text-sm text-red-600 mt-1"
+                />
+              </div>
+
+              <div>
+                <Field
+                  name="effect"
+                  placeholder="Efecto"
+                  className="w-full px-4 py-2 border border-black rounded-lg text-black bg-white placeholder-gray-500"
+                />
+                <ErrorMessage
+                  name="effect"
+                  component="div"
+                  className="text-sm text-red-600 mt-1"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  className="bg-white border border-black text-black px-4 py-2 rounded-lg hover:bg-gray-100 transition"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition"
+                >
+                  Guardar
+                </button>
+              </div>
+            </Form>
+          )}
+        </Formik>
       </div>
     </div>
   )
-}
-const styles: { [key: string]: React.CSSProperties } = {
-  overlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100vw",
-    height: "100vh",
-    backgroundColor: "rgba(0,0,0,0.5)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 999
-  },
-  modal: {
-    backgroundColor: "#fff",
-    borderRadius: "12px",
-    padding: "24px",
-    width: "400px",
-    maxWidth: "90%",
-    boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
-    position: "relative"
-  },
-  input: {
-    padding: "8px",
-    borderRadius: "8px",
-    border: "1px solid #ccc"
-  },
-  actions: {
-    marginTop: "20px",
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: "8px"
-  },
-  cancelButton: {
-    backgroundColor: "#e5e7eb",
-    border: "none",
-    padding: "8px 16px",
-    borderRadius: "8px",
-    cursor: "pointer"
-  },
-  saveButton: {
-    backgroundColor: "#9333ea",
-    color: "#fff",
-    border: "none",
-    padding: "8px 16px",
-    borderRadius: "8px",
-    cursor: "pointer"
-  }
 }

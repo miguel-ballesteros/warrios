@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from models.models import Loobys
-from loobys.infrastructure.looby_schema import LoobyCreate, LoobyUpdate
+from src.loobys.infrastructure.looby_schema import LoobyCreate, LoobyUpdate
 
 class LoobyRepository:
     def __init__(self, db: Session):

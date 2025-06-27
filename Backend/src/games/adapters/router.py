@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from core.database import get_db
-from games.infrastructure.repository import GameRepository
-from games.application.service import GameService
-from games.infrastructure.game_schema import GameCreate, GameUpdate
+from src.games.infrastructure.repository import GameRepository
+from src.games.application.service import GameService
+from src.games.infrastructure.game_schema import GameCreate, GameUpdate
 
 router = APIRouter(prefix="/games", tags=["Games"])
 
@@ -17,7 +17,7 @@ def create_game(data: GameCreate, db: Session = Depends(get_db)):
 def list_games(db: Session = Depends(get_db)):
     repo = GameRepository(db)
     service = GameService(repo)
-    return service.list_all()
+    return service.get_all()
 
 @router.get("/{game_id}")
 def get_game(game_id: int, db: Session = Depends(get_db)):

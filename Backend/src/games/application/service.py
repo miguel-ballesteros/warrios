@@ -1,6 +1,6 @@
-from games.infrastructure.repository import GameRepository
-from games.infrastructure.game_schema import GameCreate, GameUpdate
-from games.domain.port import IGameService
+from src.games.infrastructure.repository import GameRepository
+from src.games.infrastructure.game_schema import GameCreate, GameUpdate
+from src.games.domain.port import IGameService
 
 class GameService(IGameService):
     def __init__(self, repo: GameRepository):

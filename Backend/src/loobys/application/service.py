@@ -1,6 +1,6 @@
-from loobys.infrastructure.repository import LoobyRepository
-from loobys.infrastructure.looby_schema import LoobyCreate, LoobyUpdate
-from loobys.domain.port import ILoobyService
+from src.loobys.infrastructure.repository import LoobyRepository
+from src.loobys.infrastructure.looby_schema import LoobyCreate, LoobyUpdate
+from src.loobys.domain.port import ILoobyService
 
 class LoobyService(ILoobyService):
     def __init__(self, repo: LoobyRepository):

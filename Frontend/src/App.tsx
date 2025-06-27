@@ -4,6 +4,8 @@ import './App.css'
 
 import PlayerPage from './Pages/Players/PlayerPage'
 const WarriorsPage = lazy(() => import('./Pages/warriors/WarriosPage'))
+const ProfilePage = lazy(() => import('./Pages/profile/ProfilePage'))
+const LoobysPage = lazy(() => import('./Pages/Loobys/LoobysPage'))
 
 function App() {
   return (
@@ -13,6 +15,8 @@ function App() {
           <Route path="/" element={<Navigate to="/players" replace />} />
           <Route path="/players" element={<PlayerPage />} />
           <Route path="/warriors/player/:id" element={<WarriorsPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/loobys/:id" element={<LoobysPage />} />
         </Routes>
       </Suspense>
     </Router>

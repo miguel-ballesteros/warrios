@@ -1,13 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from type_warrior.adapters.router import router as type_warrior_router
-from power.adapters.router import router as power_router
-from player.adapters.router import router as player_router
-from breed.adapters.router import router as breed_router
-from warrior.adapters.router import router as warrior_router
-from relations.adapters.router import router as relations_router
-from games.adapters.router import router as games_router
-from loobys.adapters.router import router as looby_router
+from src.type_warrior.adapters.router import router as type_warrior_router
+from src.power.adapters.router import router as power_router
+from src.player.adapters.router import router as player_router
+from src.breed.adapters.router import router as breed_router
+from src.warrior.adapters.router import router as warrior_router
+from src.relations.adapters.router import router as relations_router
+from src.games.adapters.router import router as games_router
+from src.loobys.adapters.router import router as looby_router
+from src.users.adapters.router import router as user_router
 
 base_url = "/api/v1"
 
@@ -42,6 +43,8 @@ app.include_router(relations_router, prefix=base_url)
 app.include_router(games_router, prefix=base_url)
 
 app.include_router(looby_router, prefix=base_url)
+
+app.include_router(user_router, prefix=base_url)
 
 @app.get("/")
 def root():

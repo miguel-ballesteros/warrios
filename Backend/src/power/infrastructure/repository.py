@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from models.models import Power
-from power.infrastructure.power_schema import PowerCreate, PowerUpdate
+from src.power.infrastructure.power_schema import PowerCreate, PowerUpdate
 
 class PowerRepository:
     def get_all(self, db: Session):

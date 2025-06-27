@@ -29,8 +29,6 @@ class RelationshipRepository:
     def get_warriors_by_player(self, player_id: str):
         return self.db.query(PlayerWarrior).filter_by(player_id=player_id).all()
 
-    # ----- Player <-> User -----
-
     def assign_player_to_user(self, user_id: int, player_id: str):
         relation = UserPlayer(user_id=user_id, player_id=player_id)
         self.db.add(relation)

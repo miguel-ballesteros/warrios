@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from core.database import get_db
-from warrior.infrastructure.warrior_schema import WarriorCreate, WarriorUpdate
-from warrior.infrastructure.repository import WarriorRepository
-from warrior.application.service import WarriorService
+from src.warrior.infrastructure.warrior_schema import WarriorCreate, WarriorUpdate
+from src.warrior.infrastructure.repository import WarriorRepository
+from src.warrior.application.service import WarriorService
 
 router = APIRouter(prefix="/warriors", tags=["Warriors"])
 

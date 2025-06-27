@@ -3,266 +3,225 @@ import { useEffect, useState } from "react"
 import { Warrior } from "../../models/Warrior"
 import { Player } from "../../models/Player"
 import { AssignWarriorSection } from "./components/AssignWarriorSection"
-import { EditPlayerModal } from "./components/EditPlayerModal"
+import {
+  loginUser,
+  getWarriorsByPlayer,
+  assignWarriorToPlayer,
+  unassignWarriorFromPlayer,
+  getWarrior,
+  createLooby,
+  updateLooby,
+  getLoobyById,
+  getGames,
+} from "./service/service"
 
 export default function WarriosPage() {
   const navigate = useNavigate()
   const { id } = useParams()
   const [player, setPlayer] = useState<Player | null>(null)
-  const [showEditModal, setShowEditModal] = useState(false)
+  const [isJoining, setIsJoining] = useState(false)
+  const [loobyCode, setLoobyCode] = useState("")
+  const [loobyInfo, setLoobyInfo] = useState<any | null>(null)
+  const [createdCode, setCreatedCode] = useState("")
+  const [showHistory, setShowHistory] = useState(false)
+  const [historyGames, setHistoryGames] = useState([])
+
   useEffect(() => {
     if (!id) return
-
-    const playersStorage = localStorage.getItem("players")
-    if (!playersStorage) return
-
-    const parsedPlayersRaw = JSON.parse(playersStorage)
-    const parsedPlayers: Player[] = parsedPlayersRaw.map(
-      (p: any) =>
-        new Player(p.id, p.name, p.nickname, p.life, p.record, p.warriors)
-    )
-
-    const foundPlayer = parsedPlayers.find((p) => p.id.toString() === id)
-
-    if (foundPlayer) {
-      setPlayer(foundPlayer)
-    } else {
-      console.warn("Jugador no encontrado en localStorage.")
-    }
+    loginUser(id).then(async (userPlayer) => {
+      try {
+        const { warriors: assignedList } = await getWarriorsByPlayer(id)
+        const allWarriors = await getWarrior()
+        const assignedWarriors = assignedList
+          .map((assigned: any) => allWarriors.find(w => w.warrior_id === assigned.warrior_id))
+          .filter(Boolean)
+        userPlayer.warriors = assignedWarriors
+        setPlayer({ ...userPlayer })
+      } catch (err) {
+        console.error("❌ Error al obtener guerreros", err)
+      }
+    })
   }, [id])
-  const updateLocalStoragePlayer = (updated: Player) => {
-    const playersStorage = localStorage.getItem("players")
-    if (!playersStorage) return
-    const parsedPlayersRaw = JSON.parse(playersStorage)
-    const parsedPlayers: Player[] = parsedPlayersRaw.map(
-      (p: any) =>
-        new Player(p.id, p.name, p.nickname, p.life, p.record, p.warriors)
-    )
-    const newPlayersList = parsedPlayers.map((p) =>
-      p.id === updated.id ? updated : p
-    )
 
-    localStorage.setItem("players", JSON.stringify(newPlayersList))
-  }
-  const handleSavePlayer = (updated: Player) => {
+  const assignWarrior = async (warrior: Warrior) => {
     if (!player) return
-
-    player.updateInfo(updated.name, updated.nickname)
-    setPlayer(player)
-    updateLocalStoragePlayer(player)
-    setShowEditModal(false)
-  }
-  const removeWarrior = (warriorId: number) => {
-    if (!player) return
-
-    player.removeWarrior(warriorId)
-
-    const updatedPlayer = new Player(
-      player.id,
-      player.name,
-      player.nickname,
-      player.life,
-      player.record,
-      [...player.warriors]
-    )
-    setPlayer(updatedPlayer)
-    updateLocalStoragePlayer(updatedPlayer)
-  }
-
-  const deletePlayer = () => {
-    if (!player) return
-    if (confirm(`¿Seguro que deseas eliminar a ${player.name}?`)) {
-      const playersStorage = localStorage.getItem("players")
-      if (!playersStorage) return
-      const parsedPlayers: Player[] = JSON.parse(playersStorage)
-      const newList = parsedPlayers.filter((p) => p.id !== player.id)
-      localStorage.setItem("players", JSON.stringify(newList))
-      navigate("/")
+    if (player.warriors.length >= 10) return alert("Máximo 10 guerreros.")
+    if (player.warriors.find(w => w.id === warrior.id)) return alert("Ya tienes este guerrero.")
+    try {
+      await assignWarriorToPlayer(id, warrior.id)
+      player.warriors.push(warrior)
+      setPlayer({ ...player })
+    } catch {
+      alert("No se pudo asignar el guerrero.")
     }
   }
 
-  const assignWarrior = (warrior: Warrior) => {
+  const removeWarrior = async (warriorId: number) => {
     if (!player) return
-    if (player.warriors.length >= 10) {
-      alert("Solo puedes asignar un máximo de 10 guerreros.")
-      return
+    try {
+      await unassignWarriorFromPlayer(id, warriorId)
+      player.warriors = player.warriors.filter(w => w.id !== warriorId)
+      setPlayer({ ...player })
+    } catch {
+      alert("No se pudo eliminar el guerrero.")
     }
-    const alreadyAssigned = player.warriors.find((w) => w.id === warrior.id)
-    if (alreadyAssigned) {
-      alert("Este guerrero ya ha sido asignado.")
-      return
-    }
-    player.AssignWarriosToPlayer(warrior)
-    const updatedPlayer = new Player(
-      player.id,
-      player.name,
-      player.nickname,
-      player.life,
-      player.record,
-      [...player.warriors]
-    )
-    setPlayer(updatedPlayer)
-    updateLocalStoragePlayer(updatedPlayer)
   }
-  if (!player)
-    return <p>No se encontró el jugador. Intenta de nuevo desde la lista.</p>
+
+  const handleCreateLooby = async () => {
+    if (!player) return
+    const today = new Date().toISOString().split("T")[0]
+    const randomCode = Math.random().toString(36).substring(2, 8).toUpperCase()
+    try {
+      const loobyData = {
+        looby_code: randomCode,
+        looby_player_1: player.data.nickname,
+        looby_player_2: "",
+        looby_result: "",
+        looby_created: today,
+      }
+      const response = await createLooby(loobyData)
+      setLoobyInfo(response)
+      setCreatedCode(response.looby_code)
+      setIsJoining(true)
+    } catch {
+      alert("Error al crear la sala.")
+    }
+  }
+
+  const handleJoinLooby = async () => {
+    if (!player) return
+    try {
+      const allLoobys = await getLoobyById(loobyCode)
+      if (!allLoobys) throw new Error("Sala no encontrada")
+      if (allLoobys.looby_player_1 && allLoobys.looby_player_2)
+        return alert("La sala ya tiene 2 jugadores.")
+      const updatedLooby = {
+        ...allLoobys,
+        looby_player_2: player.data.nickname,
+      }
+      await updateLooby(allLoobys.looby_id, updatedLooby)
+      navigate(`/loobys/${allLoobys.looby_id}`)
+      setIsJoining(false)
+    } catch {
+      alert("No se pudo unir a la sala.")
+    }
+  }
+
+  const handleShowHistory = async () => {
+    if (!player) return
+    try {
+      const allGames = await getGames()
+      const filtered = allGames.filter((g: any) => g.games_nick_name === player.data.nickname)
+      setHistoryGames(filtered)
+      setShowHistory(true)
+    } catch {
+      alert("No se pudo cargar el historial.")
+    }
+  }
+
+  if (!player) {
+    return <p className="p-4 text-center font-mono text-black">No se encontró el jugador.</p>
+  }
+  console.log(player.data)
   return (
-    <div style={{ padding: "20px" }}>
-      <div
-        style={{
-          background: "#f9f9f9",
-          padding: "20px 30px",
-          borderRadius: "12px",
-          border: "1px solid #ddd",
-          color: "#333",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "25px",
-          fontFamily: "Arial, sans-serif",
-          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.05)",
-          position: "relative",
-        }}
-      >
-        <div>
-          <p style={{ margin: 0, fontSize: "16px", fontWeight: "600" }}>
-            {player.name}{" "}
-            <span style={{ fontSize: "13px", color: "#777", fontWeight: "normal" }}>
-              ({player.nickname})
-            </span>
-          </p>
-          <p style={{ margin: "6px 0 0", fontSize: "14px", color: "#555" }}>
-            Record: {player.record}
-          </p>
-          <div style={{ display: "flex", alignItems: "center", marginTop: "10px" }}>
-            <span style={{ marginRight: "10px", fontSize: "13px", color: "#666" }}>
-              Vida:
-            </span>
-            <div
-              style={{
-                background: "#e0e0e0",
-                borderRadius: "6px",
-                width: "160px",
-                height: "12px",
-                overflow: "hidden",
-                position: "relative",
-                border: "1px solid #ccc",
-              }}
-            >
-              <div
-                style={{
-                  width: `${player.life}%`,
-                  background:
-                    player.life > 50
-                      ? "#4caf50"
-                      : player.life > 25
-                        ? "#ff9800"
-                        : "#f44336",
-                  height: "100%",
-                  transition: "width 0.3s ease-in-out",
-                }}
-              ></div>
-            </div>
-            <span style={{ marginLeft: "10px", fontSize: "13px", color: "#444" }}>
-              {player.life}%
-            </span>
-          </div>
+    <div className="min-h-screen bg-white text-black font-mono">
+      {/* NAVBAR */}
+      <nav className="m-2 p-2 border-4 border-black rounded-2xl bg-white shadow-lg flex justify-between items-center">
+        <h1 className="text-3xl font-extrabold uppercase">🛡️ Guerreros</h1>
+        <div className="space-x-2">
+          <button onClick={handleCreateLooby} className="bg-black text-white hover:bg-white hover:text-black px-4 py-2 rounded-full text-sm font-bold border-2 border-black">Crear sala</button>
+          <button onClick={() => setIsJoining(true)} className="bg-black text-white hover:bg-white hover:text-black px-4 py-2 rounded-full text-sm font-bold border-2 border-black">Unirse a sala</button>
+          <button onClick={handleShowHistory} className="bg-black text-white hover:bg-white hover:text-black px-4 py-2 rounded-full text-sm font-bold border-2 border-black">Historial</button>
         </div>
-        <div style={{ display: "flex", gap: "10px" }}>
-          <button
-            onClick={() => setShowEditModal(true)}
-            style={{
-              backgroundColor: "#f8f8f8",
-              color: "#1976d2",
-              border: "1px solid #1976d2",
-              borderRadius: "6px",
-              padding: "8px 14px",
-              cursor: "pointer",
-              fontSize: "13px",
-              fontWeight: "500",
-              transition: "all 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "#f0f8ff";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-            }}
-          >
-            Editar
-          </button>
-          <button
-            onClick={deletePlayer}
-            style={{
-              background: "transparent",
-              color: "#e53935",
-              border: "1px solid #e53935",
-              borderRadius: "6px",
-              padding: "8px 14px",
-              cursor: "pointer",
-              fontSize: "13px",
-              fontWeight: "500",
-              transition: "all 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "#fff5f5";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-            }}
-          >
-            Eliminar
-          </button>
+      </nav>
+
+      {/* JUGADOR */}
+      <div className="p-4">
+<div className="bg-white p-6 rounded-2xl shadow-md border-2 border-black mb-8">
+  <h2 className="text-2xl font-extrabold text-black mb-2 flex items-center gap-2">
+    🎮 {player.data.nickname}
+    <span className="text-sm text-gray-500 font-medium">(Vida: {player.data.life})</span>
+  </h2>
+  <div className="text-gray-700 text-base">
+    <p><span className="font-semibold">Nombre real:</span> {player.data.name}</p>
+    <p><span className="font-semibold">Record:</span> {player.data.record}</p>
+  </div>
+</div>
+
+        {/* GUERREROS */}
+        <div className="bg-white p-6 rounded-2xl shadow-md border-2 border-black">
+          <p className="text-xl font-semibold mb-4">Guerreros asignados ({player.warriors.length}/10)</p>
+          {player.warriors.length === 0 ? (
+            <p>No hay guerreros asignados.</p>
+          ) : (
+            <ul className="space-y-2">
+              {player.warriors.map((w) => (
+                <li key={w.id} className="flex justify-between items-center p-2 border-b border-gray-200">
+                  <span>⚔️ {w.warrior_name} (vida: {w.warriors_health}, energía: {w.warriors_energy})</span>
+                  <button onClick={() => removeWarrior(w.warrior_id)} className="text-red-600 hover:text-red-800 text-lg">🗑️</button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className="mt-8">
+          <AssignWarriorSection player={player} onAssign={assignWarrior} />
         </div>
       </div>
-      <hr style={{ margin: "30px 0" }} />
-      <h2>Guerreros asignados ({player.warriors.length}/10)</h2>
-      {player.warriors.length === 0 ? (
-        <p>No hay guerreros asignados.</p>
-      ) : (
-        <ul>
-          {player.warriors.map((w) => (
-            <li
-              key={w.id}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "8px 12px",
-                borderBottom: "1px solid #ccc",
-              }}
-            >
-              <span>
-                ⚔️ {w.name} (vida: {w.health}, energía: {w.energy})
-              </span>
-              <button
-                onClick={() => removeWarrior(w.id)}
-                style={{
-                  background: "transparent",
-                  color: "#ff6666",
-                  border: "none",
-                  cursor: "pointer",
-                  fontSize: "18px",
-                }}
-                title="Eliminar guerrero"
-              >
-                🗑️
-              </button>
-            </li>
-          ))}
-        </ul>
+
+      {/* MODAL UNIRSE */}
+      {isJoining && !createdCode && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-md relative border-2 border-black">
+            <button onClick={() => setIsJoining(false)} className="absolute top-2 right-4 text-2xl text-gray-500 hover:text-black">×</button>
+            <h2 className="text-xl font-bold text-center mb-4">Unirse a una sala</h2>
+            <input value={loobyCode} onChange={(e) => setLoobyCode(e.target.value)} placeholder="Código de sala" className="w-full border p-2 rounded mb-4" />
+            <button onClick={handleJoinLooby} className="w-full bg-black text-white px-4 py-2 rounded hover:bg-white hover:text-black border-2 border-black">Unirse</button>
+          </div>
+        </div>
       )}
-      <hr style={{ margin: "30px 0" }} />
-      <AssignWarriorSection
-        player={player}
-        onAssign={assignWarrior}
-      />
-      {showEditModal && (
-        <EditPlayerModal
-          player={player}
-          onClose={() => setShowEditModal(false)}
-          onSave={handleSavePlayer}
-        />
+
+      {/* MODAL SALA CREADA */}
+      {isJoining && createdCode && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-md border-2 border-black relative">
+            <button onClick={() => {
+              setIsJoining(false)
+              setCreatedCode("")
+              navigate(`/loobys/${loobyInfo.looby_id}`)
+            }} className="absolute top-2 right-4 text-2xl text-gray-500 hover:text-black">×</button>
+            <h2 className="text-2xl font-bold mb-4 text-center">Sala creada</h2>
+            <p className="text-center text-gray-700 mb-2">Comparte este código:</p>
+            <div className="text-3xl text-center font-mono font-bold p-4 border border-black rounded bg-gray-100 mb-4">
+              {createdCode}
+            </div>
+            <button onClick={() => navigator.clipboard.writeText(createdCode)} className="mx-auto block px-4 py-2 bg-black text-white rounded-full hover:bg-white hover:text-black border-2 border-black">Copiar código</button>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL HISTORIAL */}
+      {showHistory && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-xl w-full max-w-2xl relative border-2 border-black">
+            <button onClick={() => setShowHistory(false)} className="absolute top-2 right-4 text-2xl text-gray-600 hover:text-black">×</button>
+            <h2 className="text-2xl font-bold text-center mb-4">🧾 Historial de partidas</h2>
+            {historyGames.length === 0 ? (
+              <p className="text-center text-gray-500">No hay partidas registradas.</p>
+            ) : (
+              <ul className="space-y-2 max-h-[400px] overflow-y-auto">
+                {historyGames.map((g: any) => (
+                  <li key={g.games_id} className="border p-3 rounded-md">
+                    <p><strong>Estado:</strong> {g.games_status}</p>
+                    <p><strong>Puntaje:</strong> {g.games_score}</p>
+                    <p><strong>Fecha:</strong> {g.games_created}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
       )}
     </div>
   )

@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from core.database import get_db
-from loobys.infrastructure.repository import LoobyRepository
-from loobys.application.service import LoobyService
-from loobys.infrastructure.looby_schema import LoobyCreate, LoobyUpdate
+from src.loobys.infrastructure.repository import LoobyRepository
+from src.loobys.application.service import LoobyService
+from src.loobys.infrastructure.looby_schema import LoobyCreate, LoobyUpdate
 
 router = APIRouter(prefix="/loobys", tags=["Loobys"])
 

@@ -1,5 +1,5 @@
-from breed.infrastructure.breed_schema import BreedCreate, BreedUpdate
-from breed.domain.port import BreedRepositoryPort
+from src.breed.infrastructure.breed_schema import BreedCreate, BreedUpdate
+from src.breed.domain.port import BreedRepositoryPort
 
 class BreedService:
     def __init__(self, repo: BreedRepositoryPort):

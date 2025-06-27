@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from power.infrastructure.repository import PowerRepository
-from power.infrastructure.power_schema import PowerCreate, PowerUpdate
+from src.power.infrastructure.repository import PowerRepository
+from src.power.infrastructure.power_schema import PowerCreate, PowerUpdate
 
 class PowerService:
     def __init__(self):

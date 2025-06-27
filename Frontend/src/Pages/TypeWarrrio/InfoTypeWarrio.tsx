@@ -8,22 +8,17 @@ interface InfoTypeWarrioProps {
 export default function InfoTypeWarrio({ onClose }: InfoTypeWarrioProps) {
   return (
     <LeftHalfModal onClose={onClose}>
-      <h2 style={{ marginTop: 0 }}>Tipos de Guerreros</h2>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-black">Tipos de Guerreros</h2>
+        <button
+          onClick={onClose}
+          className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition"
+        >
+          Cerrar
+        </button>
+      </div>
+
       <TypeWarriorList />
-      <button
-        onClick={onClose}
-        style={{
-          marginTop: "24px",
-          padding: "8px 16px",
-          borderRadius: "8px",
-          backgroundColor: "#9333ea",
-          color: "#fff",
-          cursor: "pointer",
-          float: "right"
-        }}
-      >
-        Cerrar
-      </button>
     </LeftHalfModal>
   )
 }

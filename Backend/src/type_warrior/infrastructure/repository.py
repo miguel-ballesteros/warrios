@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from models.models import TypeWarrior
 from typing import Optional, List, Dict
-from type_warrior.infrastructure.typewarrior_schema import TypeWarriorUpdate
-from type_warrior.domain.port import TypeWarriorRepositoryPort
+from src.type_warrior.infrastructure.typewarrior_schema import TypeWarriorUpdate
+from src.type_warrior.domain.port import TypeWarriorRepositoryPort
 
 
 class TypeWarriorRepository(TypeWarriorRepositoryPort):

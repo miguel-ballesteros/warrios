@@ -1,25 +1,27 @@
 import React, { useEffect, useState } from "react"
-import { Warrior } from "../../../models/Warrior"
+import { UpdateWarrior, Warrior } from "../../../models/Warrior"
 import { Player } from "../../../models/Player"
 import { CreateWarriorModal } from "./CreateWarriorModal"
 import { EditWarriorModal } from "./EditWarriorModal"
-import { generateWarriors } from "./generateWarriors"
 import { ConfirmDeleteModal } from "../../../components/ConfirmDeleteModal"
 import InfoBreed from "../../Breed/InfoBreed"
 import InfoTypeWarrio from "../../TypeWarrrio/InfoTypeWarrio"
 import InfoPower from "../../Powers/InfoPower"
+import {
+  getWarrior,
+  deleteWarrior,
+  updateWarrior,
+  createWarrior,
+} from "../service/service"
 
 interface Props {
   player: Player
   onAssign: (warrior: Warrior) => void
 }
 
-export const AssignWarriorSection: React.FC<Props> = ({
-  player,
-  onAssign,
-}) => {
+export const AssignWarriorSection: React.FC<Props> = ({ player, onAssign }) => {
   const [showCreateModal, setShowCreateModal] = useState(false)
-  const [availableWarriors, setAvailableWarriors] = useState<Warrior[]>([])
+  const [availableWarriors, setAvailableWarriors] = useState<UpdateWarrior[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [showBreedModal, setShowBreedModal] = useState(false)
   const [editingWarrior, setEditingWarrior] = useState<Warrior | null>(null)
@@ -27,228 +29,161 @@ export const AssignWarriorSection: React.FC<Props> = ({
   const [showTypeWarrioModal, setShowTypeWarrioModal] = useState(false)
   const [openMenuId, setOpenMenuId] = useState(false)
   const [showModalPower, setShowModalPower] = useState(false)
+
   useEffect(() => {
     const fetchWarriors = async () => {
-      const warriors = await generateWarriors()
-      setAvailableWarriors(warriors)
+      const data = await getWarrior()
+
+      // Transformar la respuesta en instancias de Warrior
+      const transformed = data.map((w: any) =>
+        new Warrior(
+          w.warrior_id,
+          w.warrior_name,
+          w.warriors_image,
+          w.warriors_health,
+          w.warriors_energy,
+          { id: w.breed_fk, name: "Raza" }, // puedes remplazar con nombre real si lo tienes
+          { id: w.type_Warrior_fk, name: "Tipo" },
+          [{ id: w.power_fk, name: "Poder" }] // si solo puede tener 1 poder
+        )
+      )
+
+      setAvailableWarriors(transformed)
     }
     fetchWarriors()
   }, [])
-  const handleCreate = (newWarrior: Warrior) => {
-    setAvailableWarriors(prev => [...prev, newWarrior])
+
+  const handleCreate = async (newWarriorData: any) => {
+    const newWarrior = await createWarrior(newWarriorData)
+    setAvailableWarriors((prev) => [...prev, newWarrior])
     onAssign(newWarrior)
     setShowCreateModal(false)
   }
-  const handleUpdate = (updated: Warrior) => {
-    setAvailableWarriors(prev =>
-      prev.map(w => (w.id === updated.id ? updated : w))
+
+  const handleUpdate = async (updated: Warrior) => {
+    const updatedWarrior = await updateWarrior(updated)
+    setAvailableWarriors((prev) =>
+      prev.map((w) => (w.id === updatedWarrior.id ? updatedWarrior : w))
     )
     setEditingWarrior(null)
   }
-  const handleDelete = (warriorId: number) => {
-    setAvailableWarriors(prev => Warrior.deleteById(prev, warriorId))
+
+  const handleDelete = async (warriorId: number) => {
+    await deleteWarrior(warriorId)
+    setAvailableWarriors((prev) => prev.filter((w) => w.id !== warriorId))
     setDeletingWarrior(null)
   }
-  const filteredWarriors = availableWarriors.filter(warrior =>
-    warrior.name.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+
+  const filteredWarriors = availableWarriors
+    .filter((warrior) => !!warrior.name) // solo los que tienen nombre
+    .filter((warrior) =>
+      warrior.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+
   return (
-    <div>
-      <h2>Asignar nuevo guerrero</h2>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
+    <div className="mt-12">
+      <div className="flex justify-between mb-4">
         <input
           type="text"
           placeholder="Buscar guerrero por nombre..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{
-            padding: "8px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-            width: "250px",
-          }}
+          className="px-4 py-2 border border-black rounded-full w-64"
         />
-        <button
-          onClick={() => setOpenMenuId(!openMenuId)}
-          style={{
-            padding: "6px 8px",
-            borderRadius: "50%",
-            border: "1px solid #ccc",
-            backgroundColor: "#fff",
-            cursor: "pointer",
-            fontSize: "18px",
-            width: "36px",
-            height: "36px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          aria-label="Opciones"
-        >
-          ⚙️
-        </button>
-        {openMenuId && (
-          <div
-            style={{
-              position: "absolute",
-              top: "80px",
-              right: "0px",
-              backgroundColor: "#fff",
-              boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-              borderRadius: "8px",
-              zIndex: 100,
-              width: "200px",
-            }}
+
+        {/* Contenedor relativo para el botón y el menú */}
+        <div className="relative">
+          <button
+            onClick={() => setOpenMenuId(!openMenuId)}
+            className="border border-black rounded-full w-10 h-10 flex items-center justify-center text-xl hover:bg-black hover:text-white transition"
           >
-            <button
-              onClick={() => {
-                setShowTypeWarrioModal(true)
-                setOpenMenuId(false)
-              }}
-              style={menuItemStyle}
-            >
-              Tipo de Guerrero
-            </button>
-            <button
-              onClick={() => {
-                setShowBreedModal(true)
-                setOpenMenuId(false)
-              }}
-              style={menuItemStyle}
-            >
-              Raza
-            </button>
-            <button
-              onClick={() => {
-                setShowModalPower(true)
-                setOpenMenuId(false)
-              }}
-              style={menuItemStyle}
-            >
-              Poderes
-            </button>
-          </div>
-        )}
+            ⚙️
+          </button>
+
+          {openMenuId && (
+            <div className="absolute right-0 top-full mt-2 bg-white shadow-lg border border-black rounded-lg z-50 w-52">
+              <button
+                onClick={() => {
+                  setShowTypeWarrioModal(true)
+                  setOpenMenuId(false)
+                }}
+                className={menuItemStyle}
+              >
+                Tipo de Guerrero
+              </button>
+              <button
+                onClick={() => {
+                  setShowBreedModal(true)
+                  setOpenMenuId(false)
+                }}
+                className={menuItemStyle}
+              >
+                Raza
+              </button>
+              <button
+                onClick={() => {
+                  setShowModalPower(true)
+                  setOpenMenuId(false)
+                }}
+                className={menuItemStyle}
+              >
+                Poderes
+              </button>
+            </div>
+          )}
+        </div>
       </div>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "16px",
-          padding: "10px",
-        }}
-      >
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         <div
           onClick={() => setShowCreateModal(true)}
-          style={{
-            border: "2px dashed #aaa",
-            padding: "10px",
-            width: "270px",
-            height: "300px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "24px",
-            cursor: "pointer",
-            backgroundColor: "#f9f9f9",
-            borderRadius: "10px",
-            transition: "transform 0.2s ease-in-out",
-          }}
+          className="border-2 border-dashed border-gray-400 flex items-center justify-center h-72 rounded-lg cursor-pointer hover:scale-105 transition"
         >
-          ➕
+          <span className="text-4xl">➕</span>
         </div>
+
         {filteredWarriors.map((warrior) => {
           const isAssigned = player.warriors.some((w) => w.id === warrior.id)
+          console.log("isAssigned", warrior)
           return (
             <div
               key={warrior.id}
-              style={{
-                backgroundColor: isAssigned ? "#f0f0f0" : "#ffffff",
-                borderRadius: "12px",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-                padding: "16px",
-                transition: "transform 0.2s ease-in-out",
-                cursor: isAssigned ? "not-allowed" : "pointer",
-                position: "relative",
-                border: "1px solid #ddd",
-                height: "300px",
-              }}
               onClick={() => !isAssigned && onAssign(warrior)}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLDivElement).style.transform = "scale(1.02)"
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLDivElement).style.transform = "scale(1)"
-              }}
+              className={`p-4 rounded-xl shadow-md border border-black relative transition transform hover:scale-105 ${isAssigned ? "bg-gray-200 cursor-not-allowed" : "bg-white cursor-pointer"}`}
             >
-              {warrior.image && (
+              {warrior.health ? (
                 <img
-                  src={warrior.image}
+                  src={warrior.health}
                   alt={warrior.name}
-                  style={{
-                    width: "100%",
-                    height: "120px",
-                    objectFit: "cover",
-                    borderRadius: "8px",
-                    marginBottom: "10px",
-                  }}
+                  className="w-full h-28 object-cover rounded-md mb-2"
                 />
-              )}
-              <div style={{ fontWeight: "bold", fontSize: "16px", marginBottom: "8px" }}>
-                {warrior.name}
-              </div>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  columnGap: "12px",
-                  rowGap: "6px",
-                  fontSize: "14px",
-                  marginBottom: "12px",
-                }}
-              >
-                <div>Vida: {warrior.health}</div>
-                <div>Energía: {warrior.energy}</div>
-                <div>Raza: {warrior.breed?.name ?? "Sin raza"}</div>
-                <div>Tipo: {warrior.typeWarrior?.name ?? "Sin tipo"}</div>
-                <div style={{ gridColumn: "1 / -1" }}>
-                  Poderes:{" "}
-                  {warrior.powers && warrior.powers.length > 0
-                    ? warrior.powers.map((power) => power.name).join(", ")
-                    : "Sin poderes"}
+              ) : (
+                <div className="w-full h-28 bg-gray-200 flex items-center justify-center text-gray-500 rounded-md mb-2">
+                  Sin imagen
                 </div>
+              )}
+              <div className="font-bold text-lg mb-1">{warrior.name}</div>
+              <div className="text-sm space-y-1">
+                <p>Vida: {warrior.image}</p>
+                <p>Energía: {warrior.energy}</p>
+                <p>Raza: {warrior.breed?.name ?? "Sin raza"}</p>
+                <p>Tipo: {warrior.typeWarrior?.name ?? "Sin tipo"}</p>
+                <p>
+                  Poderes: {warrior.powers?.length > 0
+                    ? warrior.powers.map((p) => p.name).join(", ")
+                    : "Sin poderes"}
+                </p>
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div className="flex justify-between mt-4">
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setEditingWarrior(warrior)
-                  }}
-                  style={{
-                    fontSize: "12px",
-                    padding: "6px 10px",
-                    borderRadius: "6px",
-                    border: "1px solid #999",
-                    backgroundColor: "#f8f8f8",
-                    cursor: "pointer",
-                  }}
+                  onClick={(e) => { e.stopPropagation(); setEditingWarrior(warrior) }}
+                  className="text-sm border border-black px-2 py-1 rounded hover:bg-black hover:text-white"
                 >
                   Editar
                 </button>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setDeletingWarrior(warrior)
-                  }}
-                  style={{
-                    fontSize: "12px",
-                    padding: "6px 10px",
-                    borderRadius: "6px",
-                    border: "1px solid #d33",
-                    backgroundColor: "#ffe6e6",
-                    color: "#d33",
-                    cursor: "pointer",
-                  }}
+                  onClick={(e) => { e.stopPropagation(); setDeletingWarrior(warrior) }}
+                  className="text-sm border border-red-500 text-red-500 px-2 py-1 rounded hover:bg-red-500 hover:text-white"
                 >
                   Eliminar
                 </button>
@@ -257,18 +192,12 @@ export const AssignWarriorSection: React.FC<Props> = ({
           )
         })}
       </div>
+
       {showCreateModal && (
-        <CreateWarriorModal
-          onClose={() => setShowCreateModal(false)}
-          onCreate={handleCreate}
-        />
+        <CreateWarriorModal onClose={() => setShowCreateModal(false)} onCreate={handleCreate} />
       )}
       {editingWarrior && (
-        <EditWarriorModal
-          warrior={editingWarrior}
-          onClose={() => setEditingWarrior(null)}
-          onUpdate={handleUpdate}
-        />
+        <EditWarriorModal warrior={editingWarrior} onClose={() => setEditingWarrior(null)} onUpdate={handleUpdate} />
       )}
       {deletingWarrior && (
         <ConfirmDeleteModal
@@ -284,14 +213,5 @@ export const AssignWarriorSection: React.FC<Props> = ({
   )
 }
 
-const menuItemStyle: React.CSSProperties = {
-  display: "block",
-  padding: "10px 15px",
-  textAlign: "left",
-  backgroundColor: "white",
-  border: "none",
-  width: "100%",
-  cursor: "pointer",
-  fontSize: "14px",
-  borderBottom: "1px solid #eee",
-}
+const menuItemStyle =
+  "block w-full text-left px-4 py-2 hover:bg-black hover:text-white transition border-b border-gray-200 text-sm"

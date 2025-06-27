@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from core.database import get_db  
-from breed.application.service import BreedService
-from breed.infrastructure.repository    import BreedRepository
-from breed.infrastructure.breed_schema import BreedCreate, BreedUpdate
+from src.breed.application.service import BreedService
+from src.breed.infrastructure.repository    import BreedRepository
+from src.breed.infrastructure.breed_schema import BreedCreate, BreedUpdate
 
 router = APIRouter(prefix="/breed", tags=["Breed"])
 

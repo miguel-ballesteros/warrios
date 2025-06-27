@@ -1,100 +1,79 @@
-import { useState } from "react"
-import { TypeWarrior } from "../../../models/TypeWarrior"
+import { Formik, Form, Field, ErrorMessage } from "formik"
+import { EditTypeWarrior } from "../../../models/TypeWarrior"
 
 interface EditTypeModalProps {
-  typeWarrior: TypeWarrior
-  onSave: (updated: TypeWarrior) => void
+  typeWarrior: EditTypeWarrior
+  onSave: (updated: EditTypeWarrior) => void
   onCancel: () => void
 }
+
 export default function EditTypeModal({ typeWarrior, onSave, onCancel }: EditTypeModalProps) {
-  const [name, setName] = useState(typeWarrior.name)
-  const [description, setDescription] = useState(typeWarrior.description)
-  const [basePower, setBasePower] = useState(typeWarrior.basePower)
-  const handleSubmit = () => {
-    const updated = new TypeWarrior(typeWarrior.id, name, description, basePower)
-    onSave(updated)
-  }
   return (
-    <div style={modalStyles.overlay}>
-      <div style={modalStyles.container}>
-        <h2 style={{ marginTop: 0 }}>Editar Tipo de Guerrero</h2>
-        <input
-          type="text"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          placeholder="Nombre"
-          style={modalStyles.input}
-        />
-        <input
-          type="text"
-          value={description}
-          onChange={e => setDescription(e.target.value)}
-          placeholder="Descripción"
-          style={modalStyles.input}
-        />
-        <input
-          type="number"
-          value={basePower}
-          onChange={e => setBasePower(Number(e.target.value))}
-          placeholder="Poder base"
-          style={modalStyles.input}
-        />
-        <div style={modalStyles.actions}>
-          <button onClick={handleSubmit} style={modalStyles.saveButton}>Guardar</button>
-          <button onClick={onCancel} style={modalStyles.cancelButton}>Cancelar</button>
-        </div>
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-md">
+        <h2 className="text-2xl font-bold text-black mb-4">Editar Tipo de Guerrero</h2>
+
+        <Formik
+          initialValues={{
+            name: typeWarrior.name,
+            description: typeWarrior.description,
+          }}
+          onSubmit={(values) => {
+            const updated: EditTypeWarrior ={
+              id: typeWarrior.id,
+              name: values.name,
+              description: values.description,
+          }
+            onSave(updated)
+          }}
+        >
+          {() => (
+            <Form className="space-y-4">
+              <div>
+                <Field
+                  name="name"
+                  placeholder="Nombre"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+                <ErrorMessage
+                  name="name"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
+
+              <div>
+                <Field
+                  name="description"
+                  placeholder="Descripción"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+                <ErrorMessage
+                  name="description"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800"
+                >
+                  Guardar
+                </button>
+              </div>
+            </Form>
+          )}
+        </Formik>
       </div>
     </div>
   )
-}
-const modalStyles = {
-  overlay: {
-    position: "fixed" as const,
-    top: 0,
-    left: 0,
-    width: "100vw",
-    height: "100vh",
-    backgroundColor: "rgba(0,0,0,0.4)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 999,
-  },
-  container: {
-    backgroundColor: "#fff",
-    padding: "24px",
-    borderRadius: "12px",
-    width: "100%",
-    maxWidth: "400px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-  },
-  input: {
-    width: "100%",
-    padding: "8px",
-    marginBottom: "12px",
-    borderRadius: "6px",
-    border: "1px solid #ccc",
-    fontSize: "14px",
-  },
-  actions: {
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: "10px",
-  },
-  saveButton: {
-    backgroundColor: "#4ade80",
-    color: "#000",
-    padding: "6px 12px",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-  },
-  cancelButton: {
-    backgroundColor: "#f87171",
-    color: "#fff",
-    padding: "6px 12px",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-  },
 }

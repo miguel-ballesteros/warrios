@@ -1,87 +1,76 @@
-import React, { useState } from "react"
-import { Breed } from "../../../models/Breed"
+import { Formik, Form, Field, ErrorMessage } from "formik"
+import { CreateBreed } from "../../../models/Breed"
 
 interface Props {
-  onCreate: (newBreed: Breed) => void
+  onCreate: (newBreed: CreateBreed) => void
   onCancel: () => void
 }
 
 export default function CreateBreedModal({ onCreate, onCancel }: Props) {
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
-  const [resistance, setResistance] = useState("")
-  const randomId = Date.now() + Math.floor(Math.random() * 1000)
   return (
-    <div style={{
-      position: "fixed",
-      top: 0, left: 0,
-      width: "100%",
-      height: "100%",
-      backgroundColor: "rgba(0,0,0,0.4)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: 50
-    }}>
-      <div style={{
-        backgroundColor: "#fff",
-        padding: "24px",
-        borderRadius: "16px",
-        width: "400px",
-        boxShadow: "0 8px 24px rgba(0,0,0,0.2)"
-      }}>
-        <h2 style={{ fontSize: "20px", marginBottom: "16px", color: "#6b21a8" }}>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md border border-black">
+        <h2 className="text-xl font-bold text-black mb-4 text-center">
           Crear nueva raza
         </h2>
 
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Nombre"
-          style={{ width: "100%", padding: "8px", marginBottom: "8px", border: "1px solid #ccc", borderRadius: "8px" }}
-        />
-        <input
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Descripción"
-          style={{ width: "100%", padding: "8px", marginBottom: "8px", border: "1px solid #ccc", borderRadius: "8px" }}
-        />
-        <input
-          value={resistance}
-          onChange={(e) => setResistance(e.target.value)}
-          placeholder="Resistencia"
-          style={{ width: "100%", padding: "8px", marginBottom: "16px", border: "1px solid #ccc", borderRadius: "8px" }}
-        />
-
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
-          <button
-            onClick={onCancel}
-            style={{
-              backgroundColor: "#e5e7eb",
-              padding: "8px 12px",
-              borderRadius: "8px",
-              cursor: "pointer",
-              border: "none"
-            }}
-          >
-            Cancelar
-          </button>
-          <button
-            onClick={() =>
-              onCreate(new Breed(randomId, name, description, resistance))
+        <Formik
+          initialValues={{ name: "", resistance: "" }}
+          onSubmit={(values, { resetForm }) => {
+            const newBreed: CreateBreed = {
+              name: values.name,
+              breedResistance: values.resistance,
             }
-            style={{
-              backgroundColor: "#9333ea",
-              color: "#fff",
-              padding: "8px 16px",
-              borderRadius: "8px",
-              cursor: "pointer",
-              border: "none"
-            }}
-          >
-            Crear
-          </button>
-        </div>
+            onCreate(newBreed)
+            resetForm()
+          }}
+        >
+          {() => (
+            <Form className="space-y-4">
+              <div>
+                <Field
+                  name="name"
+                  placeholder="Nombre"
+                  className="w-full px-4 py-2 border border-black text-black rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-black"
+                />
+                <ErrorMessage
+                  name="name"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
+
+              <div>
+                <Field
+                  name="resistance"
+                  placeholder="Resistencia"
+                  className="w-full px-4 py-2 border border-black text-black rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-black"
+                />
+                <ErrorMessage
+                  name="resistance"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  className="bg-white border border-black text-black px-4 py-2 rounded-lg hover:bg-gray-100 transition"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition"
+                >
+                  Crear
+                </button>
+              </div>
+            </Form>
+          )}
+        </Formik>
       </div>
     </div>
   )

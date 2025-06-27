@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from core.database import get_db  
-from player.infrastructure.repository import PlayerRepository
-from player.application.service import PlayerService
-from player.infrastructure.player_schema import PlayerCreate, PlayerUpdate, PlayerOut
+from src.player.infrastructure.repository import PlayerRepository
+from src.player.application.service import PlayerService
+from src.player.infrastructure.player_schema import PlayerCreate, PlayerUpdate, PlayerOut
 
 router = APIRouter(prefix="/players", tags=["Players"])
 

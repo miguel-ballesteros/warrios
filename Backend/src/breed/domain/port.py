@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
-from breed.infrastructure.breed_schema import BreedCreate, BreedUpdate, BreedOut
+from src.breed.infrastructure.breed_schema import BreedCreate, BreedUpdate, BreedOut
 
 class BreedRepositoryPort(ABC):
     @abstractmethod

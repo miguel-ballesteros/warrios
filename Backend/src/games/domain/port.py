@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from games.infrastructure.game_schema import GameCreate, GameUpdate
+from src.games.infrastructure.game_schema import GameCreate, GameUpdate
 
 class IGameService(ABC):
 
